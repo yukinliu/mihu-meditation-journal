@@ -1,188 +1,415 @@
-const ids = ["about", "group", "individual", "life", "training"];
-const labels = ["我与冥想", "团体冥想", "一对一冥想", "正念生活", "合作与培训"];
-let current = "about";
-const positions = {};
-const cover = document.getElementById("book-cover"),
-  sheet = document.querySelector(".sheet");
-const reduced = () =>
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let coverAnimation = null;
-function showCover() {
-  document.querySelectorAll(".outgoing-paper").forEach((n) => n.remove());
-  pageTurning = false;
-  queuedPage = null;
-  cover.getAnimations().forEach((a) => a.cancel());
-  coverAnimation?.cancel();
-  coverAnimation = null;
-  cover.style.height = "";
-  cover.classList.remove("opening");
-  cover.hidden = false;
-  sheet.hidden = true;
-  document.body.classList.add("cover-mode");
-  document.querySelectorAll("[data-page]").forEach((a) => {
-    a.classList.remove("active");
-    a.removeAttribute("aria-current");
+// Local preview: fixed-size sheets with chapter entries and un-tabbed inner pages.
+const main = document.getElementById("page");
+const sheet = document.querySelector(".notebook > .sheet");
+const cover = document.getElementById("book-cover");
+const tabs = [...document.querySelectorAll("[data-page]")];
+const roots = ["about", "group", "individual", "life", "training"];
+const names = ["我与冥想", "团体冥想", "一对一冥想", "正念生活", "合作与培训"];
+const original = Object.fromEntries(
+  roots.map((id) => [id, document.getElementById(id)]),
+);
+const sources = [],
+  pages = [];
+const clone = (el) => el?.cloneNode(true);
+const el = (tag, text, cls) => {
+  const n = document.createElement(tag);
+  n.textContent = text;
+  if (cls) n.className = cls;
+  return n;
+};
+function links(items) {
+  const n = document.createElement("div");
+  n.className = "reader-links";
+  items.forEach(([id, label]) => {
+    const a = el("a", label + " ↗", "text-link");
+    a.href = "#" + id;
+    n.append(a);
   });
-  window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "刘迷糊｜我与冥想";
+  return n;
 }
-function openBook(initial) {
-  if (!document.body.classList.contains("cover-mode")) return false;
-  const height = cover.getBoundingClientRect().height;
+function add(id, root, title, nodes) {
+  sources.push({ id, root, title, nodes: nodes.filter(Boolean) });
+}
+function blocks(node) {
+  if (!node) return [];
+  const out = [];
+  for (const child of node.children) {
+    if (child.matches("details")) {
+      out.push(
+        ...blocks(
+          child.querySelector(".detail-body") ||
+            child.querySelector(".timeline-content") ||
+            child,
+        ),
+      );
+    } else if (child.matches("summary")) {
+      const h = child.querySelector("h2");
+      if (h) out.push(clone(h));
+    } else if (
+      child.matches(
+        ".milestones,.milestone,.detail-body,.timeline-content,section,.slow",
+      )
+    )
+      out.push(...blocks(child));
+    else if (child.matches("ol,ul")) {
+      for (const li of child.children) {
+        const n = el("div", "", "reader-step");
+        n.innerHTML = li.innerHTML;
+        out.push(n);
+      }
+    } else out.push(clone(child));
+  }
+  return out;
+}
+const about = original.about;
+const hero = clone(about.querySelector(".hero"));
+hero.querySelector(".hero-actions").replaceWith(
+  links([
+    ["story", "我的冥想经历"],
+    ["group", "了解团体冥想"],
+    ["individual", "了解一对一冥想"],
+  ]),
+);
+hero.querySelectorAll("p").forEach((p) => {
+  if (p.textContent.includes("往下看")) p.remove();
+});
+add("about", "about", "初次见面", [hero]);
+const timeline = about.querySelector(".story-timeline");
+const stages = [...timeline.children];
+const overview = el("div", "", "reader-timeline");
+[
+  ["2024—至今", "research", "把实践中的好奇带进研究"],
+  ["2023", "pause", "怀疑、暂停与重新选择"],
+  ["2015—2022", "practice", "规律练习与引导实践"],
+  ["2013—2015", "origin", "从好奇开始"],
+].forEach(([year, id, title]) => {
+  const row = el("div", "", "reader-era");
+  row.append(el("span", year, "reader-year"), links([[id, title]]));
+  overview.append(row);
+});
+add("story", "about", "我与冥想的这些年", [
+  el("h1", "我的冥想经历。"),
+  el(
+    "p",
+    "2013年接触冥想，2015年起规律练习并开始带领。经历过怀疑与暂停，如今我在浙江大学心理系研究正念冥想。",
+    "reader-story-intro",
+  ),
+  overview,
+]);
+const research = stages[0];
+add("research", "about", "研究里的好奇", [
+  ...blocks(research).filter(
+    (n) => !n.matches(".milestone-intro") && !n.querySelector?.(".milestone"),
+  ),
+  links([
+    ["works", "论文与原创项目"],
+    ["story", "回到经历"],
+  ]),
+]);
+// Research achievements have their own leaves, rather than expanding the overview.
+sources.find((s) => s.id === "research").nodes = blocks(research)
+  .filter(
+    (n) =>
+      !n.matches(".milestone-intro,.eyebrow,h3") &&
+      !n.textContent.includes("2026年浙江大学") &&
+      !n.textContent.includes("共同第一作者") &&
+      !n.textContent.includes("查看发表信息") &&
+      !n.textContent.includes("近400人"),
+  )
+  .slice(0, 6)
+  .concat([
+    links([
+      ["works", "论文与原创项目"],
+      ["story", "回到经历"],
+    ]),
+  ]);
+add("works", "about", "论文与原创项目", [
+  el("h1", "一些具体的工作。"),
+  ...blocks(research.querySelector(".milestones")),
+  links([["story", "回到经历"]]),
+]);
+add("pause", "about", "怀疑与暂停", [
+  ...blocks(stages[1]),
+  links([["story", "回到经历"]]),
+]);
+const practice = stages[2],
+  album = clone(practice.querySelector(".history-album"));
+add("practice", "about", "规律练习与带领", [
+  el("h1", "规律练习，也开始带领。"),
+  clone(practice.querySelector(".timeline-content > p")),
+  links([
+    ["memories", "翻翻练习里的旧时光"],
+    ["practice-change", "冥想给我带来的变化"],
+    ["story", "回到经历"],
+  ]),
+]);
+add("memories", "about", "练习里的旧时光", [
+  album,
+  links([["practice", "回到练习经历"]]),
+]);
+const ps = practice.querySelectorAll(".timeline-content > p");
+add("practice-change", "about", "冥想带来的变化", [
+  el("h1", "对我而言，冥想……"),
+  clone(ps[ps.length - 1]),
+  links([["practice", "回到练习经历"]]),
+]);
+add("origin", "about", "从好奇开始", [
+  ...blocks(stages[3]),
+  links([["story", "回到经历"]]),
+]);
+const group = original.group,
+  gs = [...group.querySelectorAll(":scope > section")];
+add("group", "group", "团体冥想", [
+  clone(group.querySelector("h1")),
+  clone(group.querySelector(".lead")),
+  clone(group.querySelector(".scene")),
+  links([
+    ["group-plan", "安排与费用"],
+    ["group-process", "怎样一起练习"],
+    ["group-thoughts", "带领时我在意什么"],
+  ]),
+]);
+add("group-plan", "group", "安排与费用", [
+  ...blocks(gs[0]),
+  links([["group", "回到团体冥想"]]),
+]);
+add("group-process", "group", "怎样一起练习", [
+  ...blocks(gs[1]),
+  links([["group", "回到团体冥想"]]),
+]);
+add("group-thoughts", "group", "练习与生活", [
+  ...blocks(gs[2]),
+  links([["group", "回到团体冥想"]]),
+]);
+const individual = original.individual,
+  ins = [...individual.querySelectorAll(":scope > section")];
+add("individual", "individual", "一对一冥想", [
+  clone(individual.querySelector("h1")),
+  clone(individual.querySelector(".lead")),
+  clone(individual.querySelector(".personal-note")),
+  links([
+    ["individual-practice", "冥想练习"],
+    ["individual-questions", "独立冥想答疑"],
+    ["individual-extension", "练习的延伸 · 心力发展"],
+    ["individual-fees", "费用与开始"],
+  ]),
+]);
+add("individual-practice", "individual", "一对一练习", [
+  ...ins.slice(0, 3).flatMap(blocks),
+  links([["individual", "回到一对一冥想"]]),
+]);
+add("individual-questions", "individual", "独立冥想答疑", [
+  ...blocks(individual.querySelector(".meditation-questions")),
+  links([["individual", "回到一对一冥想"]]),
+]);
+add("individual-extension", "individual", "心力发展", [
+  ...blocks(individual.querySelector(".extension")),
+  links([["individual", "回到一对一冥想"]]),
+]);
+add("individual-fees", "individual", "费用与开始", [
+  ...blocks(ins[ins.length - 1]),
+  links([["individual", "回到一对一冥想"]]),
+]);
+const life = original.life;
+add("life", "life", "正念生活", [
+  el("h1", "练习之外，也看见生活。"),
+  clone(life.querySelector("p")),
+  links([["jianji", "了解见己记录软件"]]),
+]);
+add("jianji", "life", "见己记录软件", [
+  ...blocks(life.querySelector("#jianji")),
+  links([["life", "回到正念生活"]]),
+]);
+const training = original.training;
+add("training", "training", "合作与培训", [
+  clone(training.querySelector("h1")),
+  clone(training.querySelector(".lead")),
+  links([
+    ["cooperation", "已有项目与定制合作"],
+    ["training-plan", "培训筹备"],
+  ]),
+]);
+const ts = [...training.querySelectorAll(":scope > section")];
+add("cooperation", "training", "合作交流", [
+  ...blocks(ts[0]),
+  links([["training", "回到合作与培训"]]),
+]);
+add("training-plan", "training", "培训筹备", [
+  ...blocks(ts[1]),
+  links([["training", "回到合作与培训"]]),
+]);
+// Render only one physical leaf; text that exceeds its capacity continues on another leaf.
+main.replaceChildren();
+const content = el("article", "", "reader-content");
+main.append(content);
+document
+  .querySelectorAll(".desk-caption,.desk-bottom,.sheet>.contact-section")
+  .forEach((n) => n.remove());
+let current = "cover",
+  activeRoot = "about",
+  transition = null;
+const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function paginate() {
+  const old = current;
+  pages.length = 0;
+  const hidden = sheet.hidden;
+  sheet.hidden = false;
+  document.body.classList.add("measuring");
+  for (const source of sources) {
+    let index = 0,
+      page = { ...source, key: source.id, nodes: [] };
+    content.replaceChildren();
+    const queue = source.nodes.map(clone);
+    while (queue.length) {
+      const node = queue.shift();
+      content.append(node);
+      const overflow = content.scrollHeight > content.clientHeight + 2;
+      if (overflow && page.nodes.length) {
+        content.removeChild(node);
+        pages.push(page);
+        index++;
+        page = { ...source, key: source.id + "~" + index, nodes: [] };
+        content.replaceChildren();
+        queue.unshift(node);
+        continue;
+      }
+      if (overflow && node.matches("p") && node.textContent.length > 70) {
+        const text = node.textContent;
+        let cut = Math.floor(text.length * 0.6);
+        const first = node.cloneNode(false),
+          rest = node.cloneNode(false);
+        first.textContent = text.slice(0, cut);
+        rest.textContent = text.slice(cut);
+        node.remove();
+        queue.unshift(first, rest);
+        continue;
+      }
+      page.nodes.push(node);
+    }
+    if (page.nodes.length) pages.push(page);
+  }
+  document.body.classList.remove("measuring");
+  sheet.hidden = hidden;
+  render(old, false);
+}
+function render(key, animate = true) {
+  if (key === "cover" || !key) {
+    transition?.cancel();
+    transition = null;
+    document.querySelectorAll(".outgoing-paper").forEach((n) => n.remove());
+    current = "cover";
+    sheet.hidden = true;
+    cover.hidden = false;
+    cover.getAnimations().forEach((a) => a.cancel());
+    document.body.classList.add("cover-mode");
+    tabs.forEach((t) => {
+      t.classList.remove("active");
+      t.removeAttribute("aria-current");
+    });
+    return;
+  }
+  let p = pages.find((p) => p.key === key);
+  if (!p) p = pages.find((p) => p.key === "about");
+  if (!p) return;
+  const fromCover = current === "cover";
+  let outgoing;
+  if (animate && !reduced() && !fromCover && current !== p.key) {
+    const rect = sheet.getBoundingClientRect();
+    outgoing = sheet.cloneNode(true);
+    outgoing.classList.add("outgoing-paper");
+    outgoing.inert = true;
+    outgoing.setAttribute("aria-hidden", "true");
+    outgoing.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+    Object.assign(outgoing.style, {
+      position: "fixed",
+      left: rect.left + "px",
+      top: rect.top + "px",
+      width: rect.width + "px",
+      height: rect.height + "px",
+      margin: "0",
+      transformOrigin: "left center",
+      zIndex: "30",
+    });
+    document.body.append(outgoing);
+  }
   sheet.hidden = false;
   document.body.classList.remove("cover-mode");
-  if (initial || reduced()) {
-    cover.hidden = true;
-    return true;
-  }
-  cover.style.height = height + "px";
-  cover.classList.add("opening");
-  coverAnimation = cover.animate(
-    [
-      { transform: "perspective(1500px) rotateY(0deg)", opacity: 1 },
-      { transform: "perspective(2200px) rotateY(-150deg)", opacity: 1 },
-    ],
-    { duration: 850, easing: "cubic-bezier(.22,.6,.2,1)", fill: "forwards" },
-  );
-  coverAnimation.onfinish = () => {
-    const finished = coverAnimation;
-    cover.hidden = true;
-    finished?.cancel();
-    cover.classList.remove("opening");
-    cover.style.height = "";
-    coverAnimation = null;
-  };
-  return true;
-}
-let pageTurning = false,
-  queuedPage = null;
-function turnToPage(id) {
-  if (pageTurning) {
-    queuedPage = id;
-    return;
-  }
-  if (reduced()) {
-    showPage(id, true);
-    window.scrollTo({ top: 0, behavior: "instant" });
-    return;
-  }
-  pageTurning = true;
-  positions[current] = window.scrollY;
-  const rect = sheet.getBoundingClientRect();
-  const outgoing = sheet.cloneNode(true);
-  outgoing.classList.add("outgoing-paper");
-  outgoing.setAttribute("aria-hidden", "true");
-  outgoing.inert = true;
-  outgoing
-    .querySelectorAll(".contact-section,footer,.chapter[hidden]")
-    .forEach((n) => n.remove());
-  outgoing.querySelectorAll("[id]").forEach((n) => {
-    if (n.id === "about") n.classList.add("snapshot-about");
-    n.removeAttribute("id");
+  content.replaceChildren(...p.nodes.map(clone));
+  current = p.key;
+  activeRoot = p.root;
+  tabs.forEach((t) => {
+    const active = t.dataset.page === p.root;
+    t.classList.toggle("active", active);
+    if (active) t.setAttribute("aria-current", "page");
+    else t.removeAttribute("aria-current");
   });
-  Object.assign(outgoing.style, {
-    position: "fixed",
-    left: rect.left + "px",
-    top: Math.min(64, Math.max(0, rect.top + window.scrollY)) + "px",
-    width: rect.width + "px",
-    height: rect.height + "px",
-    margin: "0",
-    transformOrigin: "left " + innerHeight / 2 + "px",
-    zIndex: "30",
-    pointerEvents: "none",
-  });
-  document.body.append(outgoing);
-  showPage(id, true);
-  window.scrollTo({ top: 0, behavior: "instant" });
-  const turn = outgoing.animate(
-    [
-      { transform: "perspective(2400px) rotateY(0deg)" },
-      { transform: "perspective(2400px) rotateY(-105deg)" },
-    ],
-    { duration: 1000, easing: "cubic-bezier(.35,0,.25,1)", fill: "forwards" },
-  );
-  turn.onfinish = () => {
-    outgoing.remove();
-    pageTurning = false;
-    document.getElementById("page").focus({ preventScroll: true });
-    const next = queuedPage;
-    queuedPage = null;
-    if (next && next !== current) showPage(next);
-  };
-}
-cover.addEventListener("click", () => {
-  location.hash = "about";
-});
-
-function showPage(id, initial = false) {
-  if (!ids.includes(id)) return;
-  const outgoingScroll = window.scrollY;
-  const fromCover = openBook(initial);
-  if (id !== current && !initial && !fromCover) {
-    turnToPage(id);
-    return;
-  }
-  positions[current] = outgoingScroll;
-  const changed = id !== current;
-  sheet.querySelectorAll(".chapter").forEach((p) => {
-    p.hidden = p.id !== id;
-  });
-
-  document.querySelectorAll("[data-page]").forEach((a) => {
-    const active = a.dataset.page === id;
-    a.classList.toggle("active", active);
-    if (active) a.setAttribute("aria-current", "page");
-    else a.removeAttribute("aria-current");
-  });
-
-  current = id;
-  const n = ids.indexOf(id);
-  document.getElementById("page-number").textContent =
-    labels[n] + " · 0" + (n + 1) + " / 05";
+  const n = pages.indexOf(p);
   document.getElementById("prev").disabled = n === 0;
-  document.getElementById("next").disabled = n === ids.length - 1;
-  document.title = labels[n] + "｜刘迷糊的个人手帐";
-  if (!initial && (changed || fromCover)) {
-    window.scrollTo({ top: positions[id] || 0, behavior: "instant" });
-    document.getElementById("page").focus({ preventScroll: true });
+  document.getElementById("next").disabled = n === pages.length - 1;
+  document.getElementById("page-number").textContent =
+    p.title + " · " + (n + 1) + " / " + pages.length;
+  document.title = p.title + "｜刘迷糊";
+  if (fromCover && animate && !reduced()) {
+    cover.classList.add("opening");
+    transition = cover.animate(
+      [
+        { transform: "perspective(1800px) rotateY(0)" },
+        { transform: "perspective(1800px) rotateY(-150deg)" },
+      ],
+      { duration: 850, easing: "ease-in-out" },
+    );
+    transition.onfinish = () => {
+      cover.hidden = true;
+      cover.classList.remove("opening");
+      transition = null;
+    };
+  } else cover.hidden = true;
+  if (outgoing) {
+    transition = outgoing.animate(
+      [
+        { transform: "perspective(2400px) rotateY(0)" },
+        { transform: "perspective(2400px) rotateY(-105deg)" },
+      ],
+      { duration: 900, easing: "ease-in-out" },
+    );
+    transition.onfinish = () => {
+      outgoing.remove();
+      transition = null;
+    };
   }
+  bindAlbum();
+  content.focus({ preventScroll: true });
 }
 function route() {
-  const hash = decodeURIComponent(location.hash.slice(1));
-  if (!hash || hash === "cover") {
-    showCover();
-    return;
+  const key = decodeURIComponent(location.hash.slice(1)) || "cover";
+  if (transition) {
+    transition.cancel();
+    document.querySelectorAll(".outgoing-paper").forEach((n) => n.remove());
+    cover.classList.remove("opening");
+    transition = null;
   }
-  if (ids.includes(hash)) showPage(hash);
-  else if (["jianji", "practice-album"].includes(hash)) {
-    showPage(hash === "jianji" ? "life" : "about");
-    const target = document.getElementById(hash);
-    const parent = target.closest(".timeline-fold");
-    if (parent) parent.open = true;
-    requestAnimationFrame(() =>
-      target.scrollIntoView({ behavior: reduced() ? "auto" : "smooth" }),
-    );
-  }
+  render(key);
 }
-window.addEventListener("hashchange", route);
+cover.onclick = () => (location.hash = "about");
 document.getElementById("prev").onclick = () => {
-  const n = ids.indexOf(current);
-  if (n > 0) location.hash = ids[n - 1];
+  const i = pages.findIndex((p) => p.key === current);
+  if (i > 0) location.hash = pages[i - 1].key;
 };
 document.getElementById("next").onclick = () => {
-  const n = ids.indexOf(current);
-  if (n < ids.length - 1) location.hash = ids[n + 1];
+  const i = pages.findIndex((p) => p.key === current);
+  if (i < pages.length - 1) location.hash = pages[i + 1].key;
 };
 const dialog = document.getElementById("contact-dialog");
 let opener;
-document.querySelectorAll("[data-contact]").forEach(
-  (b) =>
-    (b.onclick = () => {
-      opener = b;
-      dialog.showModal();
-    }),
-);
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-contact]");
+  if (b) {
+    opener = b;
+    dialog.showModal();
+  }
+});
 dialog.querySelector(".close").onclick = () => dialog.close();
+dialog.addEventListener("close", () => opener?.focus());
 dialog.addEventListener("click", (e) => {
   if (e.target === dialog) {
     const r = dialog.getBoundingClientRect();
@@ -195,73 +422,61 @@ dialog.addEventListener("click", (e) => {
       dialog.close();
   }
 });
-dialog.addEventListener("close", () => opener?.focus());
-if (!location.hash || location.hash === "#cover") showCover();
-else {
-  showPage(
-    ids.includes(location.hash.slice(1)) ? location.hash.slice(1) : "about",
-    true,
-  );
-  if (["#jianji", "#practice-album"].includes(location.hash)) route();
-}
-
-// 点击图片、方向键和横向轻扫；不自动播放。
-const album = document.querySelector(".history-album");
-if (album) {
+function bindAlbum() {
+  const album = content.querySelector(".history-album");
+  if (!album) return;
   const slides = [...album.querySelectorAll(".album-slide")];
-  let index = 0,
-    lastSwipe = 0;
-  const renderAlbum = (n) => {
-    index = (n + slides.length) % slides.length;
-    slides.forEach((slide, i) => {
-      slide.hidden = i !== index;
-    });
+  let i = 0,
+    start,
+    last = 0;
+  const show = (n) => {
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, j) => (s.hidden = i !== j));
     album.querySelector(".album-count").textContent =
-      String(index + 1).padStart(2, "0") +
+      String(i + 1).padStart(2, "0") +
       " / " +
       String(slides.length).padStart(2, "0");
   };
-  album.querySelectorAll(".album-image").forEach((button) =>
-    button.addEventListener("click", (e) => {
-      if (Date.now() - lastSwipe < 450) return;
-      renderAlbum(index + 1);
-      album
-        .querySelector(".album-slide:not([hidden]) .album-image")
-        .focus({ preventScroll: true });
-    }),
+  album.querySelectorAll(".album-image").forEach(
+    (b) =>
+      (b.onclick = () => {
+        if (Date.now() - last > 450) show(i + 1);
+      }),
   );
-  album.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+  album.onkeydown = (e) => {
+    if (["ArrowLeft", "ArrowRight"].includes(e.key)) {
       e.preventDefault();
-      renderAlbum(index + (e.key === "ArrowRight" ? 1 : -1));
+      show(i + (e.key === "ArrowRight" ? 1 : -1));
       album
-        .querySelector(".album-slide:not([hidden]) .album-image")
+        .querySelector(".album-slide:not([hidden]) button")
         .focus({ preventScroll: true });
     }
-  });
-  let start = null;
+  };
   album.addEventListener(
     "touchstart",
-    (e) => {
-      start = {
-        x: e.changedTouches[0].clientX,
-        y: e.changedTouches[0].clientY,
-      };
-    },
+    (e) => (start = e.changedTouches[0].clientX),
     { passive: true },
   );
   album.addEventListener(
     "touchend",
     (e) => {
-      if (!start) return;
-      const dx = e.changedTouches[0].clientX - start.x,
-        dy = e.changedTouches[0].clientY - start.y;
-      if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-        lastSwipe = Date.now();
-        renderAlbum(index + (dx < 0 ? 1 : -1));
+      const dx = e.changedTouches[0].clientX - start;
+      if (Math.abs(dx) > 55) {
+        last = Date.now();
+        show(i + (dx < 0 ? 1 : -1));
       }
-      start = null;
     },
     { passive: true },
   );
 }
+content.tabIndex = -1;
+window.addEventListener("hashchange", route);
+let resize;
+window.addEventListener("resize", () => {
+  clearTimeout(resize);
+  resize = setTimeout(paginate, 180);
+});
+document.fonts.ready.then(() => {
+  paginate();
+  route();
+});
