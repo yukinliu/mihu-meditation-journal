@@ -62,18 +62,13 @@ function blocks(node) {
   return out;
 }
 const about = original.about;
-const hero = clone(about.querySelector(".hero"));
-hero.querySelector(".hero-actions").replaceWith(
-  links([
-    ["story", "我的冥想经历"],
-    ["group", "了解团体冥想"],
-    ["individual", "了解一对一冥想"],
-  ]),
-);
-hero.querySelectorAll("p").forEach((p) => {
-  if (p.textContent.includes("往下看")) p.remove();
-});
-add("about", "about", "初次见面", [hero]);
+const intro=el('div','','intro-sheet');
+const introTop=el('div','','intro-top');const identity=el('div','','intro-identity');identity.append(el('h1','你好，我是刘迷糊。'),el('p','浙江大学心理系硕士在读，研究方向正念冥想，持续实践冥想带练。'));const portrait=clone(about.querySelector('.portrait'));portrait.querySelector('img').src='assets/portrait-cutout.png';portrait.querySelector('figcaption')?.remove();introTop.append(identity,portrait);intro.append(introTop,el('p','2013 年起冥想便成为了我生活的一部分。','intro-bridge'));
+const map=el('nav','','journey-map');map.setAttribute('aria-label','冥想历程');
+const routeLine=document.createElementNS('http://www.w3.org/2000/svg','svg');routeLine.setAttribute('viewBox','0 0 600 230');routeLine.setAttribute('preserveAspectRatio','none');routeLine.classList.add('journey-line');routeLine.innerHTML='<path d="M110 184 C195 215 352 188 448 158 C550 97 44 157 156 82 C245 15 349 70 468 48" fill="none" stroke="#a28b65" stroke-width="2" stroke-dasharray="4 7" stroke-linecap="round"/>';map.append(routeLine);
+[['2024—至今','research','科研与实践','#78968a'],['2023','pause','自我怀疑与搁浅','#bc987d'],['2015—2022','practice','规律练习与引导','#a99b6f'],['2013—2015','origin','初识与断断续续','#8faaa9']].forEach(([year,id,label,color],i)=>{const a=el('a','','journey-stop');a.href='#'+id;const image=el('img');image.src='assets/journey-'+id+'-scene.png';image.alt='';image.width=100;image.height=100;a.append(image);a.append(el('span',year,'journey-year'),el('span',label,'journey-caption'));map.append(a);});
+intro.append(map,links([['group','了解团体冥想'],['individual','了解一对一冥想']]));add('about','about','初次见面',[intro]);
+for(const [id,label,text] of [['prev','上一页','←'],['next','下一页','→']]){const b=document.getElementById(id);b.textContent=text;b.setAttribute('aria-label',label);}
 const timeline = about.querySelector(".story-timeline");
 const stages = [...timeline.children];
 const overview = el("div", "", "reader-timeline");
@@ -238,6 +233,47 @@ add("training-plan", "training", "培训筹备", [
   ...blocks(ts[1]),
   links([["training", "回到合作与培训"]]),
 ]);
+// Confirmed opening three leaves, in chronological reading order.
+const originCopy = [
+ '2013 年，我接触了冥想。起初练习断断续续，也说不清自己在寻找什么，只记得练习结束后，整个人很明亮、很舒服。',
+ '最初两年，有几个片段一直留在记忆里。',
+ '一次练习结束，老师在一旁弹起吉他，我忽然没来由地流了眼泪。',
+ '一次呼吸法进修学习营里，我是年龄最小的一个，和老师、姐姐阿姨们一起，在山中学习。',
+ '还有坐不了多久就酸痛的脚踝、久坐后发麻的双腿、烛光冥想时忍不住想眨眼的冲动……',
+ '那时，我还不能理解这些体验。但这些瞬间，让我带着好奇，一次次靠近冥想。'
+];
+const originSheet=el('div','','origin-sheet memory-leaf scrapbook-leaf');
+const originHeader=el('div','','memory-intro');originHeader.append(el('h1','最初，是一次没有预料到的触动。'),el('p',originCopy[0]));
+const memoryScenes=el('div','','memory-scenes');
+[['吉他声里',originCopy[2]],['山中的学习',originCopy[3]],['身体的记忆',originCopy[4]]].forEach(([title,text])=>{const note=el('section','','memory-note');note.append(el('h2',title),el('p',text));memoryScenes.append(note);});
+const memoryArt=el('img','','memory-art');memoryArt.src='assets/memory-guitar-candle.png';memoryArt.alt='吉他、烛光、山的轮廓与一本练习手记';
+originSheet.append(originHeader,el('p',originCopy[1],'memory-preface'),memoryScenes,memoryArt,el('p',originCopy[5],'memory-ending'));
+Object.assign(sources.find(s=>s.id==='origin'),{title:'2013—2015',nodes:[originSheet]});
+const practiceCopy=[
+ '从 2015 年起，我开始规律练习，也逐渐带领线上、线下的团体与一对一冥想。那八年里，我没有系统记录带领过多少人、多少小时，只是全心投入其中：一边学习和练习，一边把理解带进引导，再从实际带领中继续学习。',
+ '冥想对我的影响，也逐渐进入更广的生活：怎样看待自己、怎样与人相处，以及怎样面对那些不如意的时刻。',
+ '我更容易觉察自己的念头和情绪，也多了一些选择怎样回应的空间。觉察、接纳、慈悲……慢慢地从几个词，成为我理解和对待生活的方式。'
+];
+const practiceSheet=el('div','','practice-sheet'),practiceText=el('div','','practice-copy journal-writing'),practiceAlbum=clone(album);practiceAlbum.querySelector('.album-heading')?.remove();practiceText.append(el('h1','从自己练习，到带领他人。'),...practiceCopy.map(t=>el('p',t)));practiceSheet.append(practiceAlbum,practiceText);
+Object.assign(sources.find(s=>s.id==='practice'),{title:'2015—2022',nodes:[practiceSheet]});
+const pauseCopy=[
+'2023 年，现实中的变动与挑战，让我开始怀疑自己，也怀疑把冥想继续做下去的可能。我暂停了带领，一边备考浙江大学心理系研究生，一边做产品经理的工作。',
+'冥想没有完全离开。图书馆里学累了、注意力散了，我就静静地坐一会儿。没有复杂的安排，只让自己歇一歇，再继续眼前的生活。',
+'后来选择研究方向，我还是犹豫：喜欢冥想，却又被过去的经历牵住。直到一个晚上，从图书馆回家的路上，经过停车场，一个念头突然清楚起来。',
+'那一刻，我很激动，也有些想哭。经历了怀疑和暂停，我还是想回到这件事上。'
+];
+const pauseSheet=el('div','','pause-sheet scrapbook-leaf');const pauseArt=el('img','','pause-art');pauseArt.src='assets/journey-pause-scene.png';pauseArt.alt='桌前思考的自己，身边是书、杯子和计划本';
+const pauseTop=el('div','','pause-top');pauseTop.append(el('h1','停下来，也重新选择。'),pauseArt);
+const pauseDiary=el('div','','pause-diary journal-writing');pauseDiary.append(el('p',pauseCopy[0]),el('p',pauseCopy[1]),el('p',pauseCopy[2]));pauseSheet.append(pauseTop,pauseDiary,el('blockquote','“我就是要去学正念冥想，我什么都不管，我就只学它。”'),el('p',pauseCopy[3],'pause-ending'));
+Object.assign(sources.find(s=>s.id==='pause'),{title:'2023',nodes:[pauseSheet]});
+const order=['about','origin','practice','pause','research','works'];
+const extras=sources.filter(s=>!['story','memories','practice-change',...order].includes(s.id));
+const first=order.map(id=>sources.find(s=>s.id===id));sources.splice(0,sources.length,...first,...extras);
+const aliases={story:'about',memories:'practice','practice-change':'practice'};
+for(const source of sources)for(const node of source.nodes)node.querySelectorAll?.('a[href]').forEach(a=>{const id=a.hash.slice(1);if(aliases[id])a.hash=aliases[id];});
+// Click cues without turning the vignette into a boxed button.
+map.querySelectorAll('.journey-stop').forEach(a=>{a.setAttribute('aria-label',a.textContent+'，翻开这一段经历');});
+intro.querySelectorAll(':scope>.reader-links a').forEach(a=>a.textContent=a.textContent.replace(/\s*↗$/,''));
 // Render only one physical leaf; text that exceeds its capacity continues on another leaf.
 main.replaceChildren();
 const content = el("article", "", "reader-content");
@@ -308,6 +344,7 @@ function render(key, animate = true) {
     });
     return;
   }
+  key=aliases[key]||key;
   let p = pages.find((p) => p.key === key);
   if (!p) p = pages.find((p) => p.key === "about");
   if (!p) return;
@@ -437,6 +474,7 @@ function bindAlbum() {
       " / " +
       String(slides.length).padStart(2, "0");
   };
+  show(0);
   album.querySelectorAll(".album-image").forEach(
     (b) =>
       (b.onclick = () => {
