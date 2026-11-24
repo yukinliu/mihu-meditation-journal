@@ -271,7 +271,8 @@ freeQuestions.type = "button";
 freeQuestions.dataset.contact = "";
 freeQuestions.setAttribute("aria-haspopup", "dialog");
 freeQuestions.append(el("strong", "免费答疑解惑"), document.createTextNode("　对冥想好奇？练习遇到问题？都可以。唠个有关冥想的嗑。"));
-designSheet.append(principles, freeQuestions);
+designHero.before(freeQuestions);
+designSheet.append(principles);
 add("meditation-design", "meditation", "设计理念", [designSheet]);
 
 const customOptions = [
@@ -287,7 +288,7 @@ function jianjiImage(file, alt = "") {
   return img;
 }
 const lifeHeading = el("div", "", "jianji-heading");
-lifeHeading.append(jianjiImage("logo"), el("h1", "见己 · 自我觉察与成长记录"));
+lifeHeading.append(el("h1", "见己 · 自我觉察与成长记录"));
 const lifeIntro = el("p", "见己是一款电脑端记录工具。把感受、想法与经历留下来，按日期和项目回看。");
 const lifeGallery = makePosterGallery("见己图文", "jianji-poster-original", [
   "见己简介",
@@ -344,19 +345,65 @@ viewerClose.type = "button";
 viewerClose.setAttribute("aria-label", "返回海报切换");
 viewerClose.append(viewerImage);
 const viewerSave = el("a", "保存原图", "poster-viewer-save");
-viewerClose.onclick = () => posterViewer.close();
-posterViewer.append(viewerClose, viewerSave);
+const viewerToolbar = el("div", "", "poster-viewer-tools");
+const viewerCount = el("span");
+viewerCount.setAttribute("aria-live", "polite");
+let viewerStep;
+let viewerTouch;
+let viewerSwipedAt = -Infinity;
+
+for (const [label, direction] of [["上张", -1], ["下张", 1]]) {
+  const button = el("button", label, "poster-viewer-nav");
+  button.type = "button";
+  button.onclick = () => viewerStep?.(direction);
+  if (direction === 1) viewerToolbar.append(viewerCount);
+  viewerToolbar.append(button);
+}
+viewerToolbar.append(viewerSave);
+viewerClose.onclick = () => {
+  if (performance.now() - viewerSwipedAt > 380) posterViewer.close();
+};
+posterViewer.append(viewerClose, viewerToolbar);
 document.body.append(posterViewer);
 posterViewer.addEventListener("click", event => {
   if (event.target === posterViewer) posterViewer.close();
 });
-function openPosterViewer(poster, returnFocus) {
-  viewerImage.src = poster.src;
-  viewerImage.alt = poster.alt;
-  viewerSave.href = poster.src;
-  viewerSave.download = new URL(poster.src).pathname.split("/").pop();
+posterViewer.addEventListener("keydown", event => {
+  if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+  event.preventDefault();
+  event.stopPropagation();
+  viewerStep?.(event.key === "ArrowRight" ? 1 : -1);
+});
+viewerClose.addEventListener("touchstart", event => {
+  viewerTouch = event.touches.length === 1 ? event.touches[0] : null;
+}, { passive: true });
+viewerClose.addEventListener("touchcancel", () => { viewerTouch = null; });
+viewerClose.addEventListener("touchend", event => {
+  if (!viewerTouch) return;
+  const dx = event.changedTouches[0].clientX - viewerTouch.clientX;
+  const dy = event.changedTouches[0].clientY - viewerTouch.clientY;
+  viewerTouch = null;
+  if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+    viewerSwipedAt = performance.now();
+    viewerStep?.(dx < 0 ? 1 : -1);
+  }
+}, { passive: true });
+function openPosterViewer(currentPoster, step, count, returnFocus) {
+  function refresh() {
+    const poster = currentPoster();
+    viewerImage.src = poster.src;
+    viewerImage.alt = poster.alt;
+    viewerSave.href = poster.src;
+    viewerSave.download = new URL(poster.src).pathname.split("/").pop();
+    viewerCount.textContent = count.textContent;
+  }
+  viewerStep = direction => { step(direction); refresh(); };
+  viewerSwipedAt = -Infinity;
+  refresh();
   posterViewer.showModal();
   posterViewer.addEventListener("close", () => {
+    viewerStep = null;
+    viewerTouch = null;
     if (returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
   }, { once: true });
 }
@@ -377,7 +424,7 @@ function bindPosterGallery(root) {
     frame.addEventListener("click", event => {
       if (performance.now() - swipedAt < 380) return;
       const image = posters[index].querySelector("img");
-      if (event.target === image) openPosterViewer(image, frame);
+      if (event.target === image) openPosterViewer(() => posters[index].querySelector("img"), step, count, frame);
     });
   }
   function step(direction) {
@@ -402,7 +449,7 @@ function bindPosterGallery(root) {
     if (hasArtwork && ["Enter", " "].includes(event.key)) {
       event.preventDefault();
       event.stopPropagation();
-      openPosterViewer(posters[index].querySelector("img"), frame);
+      openPosterViewer(() => posters[index].querySelector("img"), step, count, frame);
       return;
     }
     if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
@@ -431,7 +478,7 @@ const collaborationCards = el("div", "", "collaboration-cards");
 for (const [key, title, summary, imageFile] of [
   ["merp", "21 天正念情绪调节", "每天 15 分钟，把情绪觉察与调节练进日常。", "project-vignette-merp.png"],
   ["family", "4 周正念亲子团体", "从家长的情绪觉察入手，把练习带回亲子相处。", "project-vignette-family.png"],
-  ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的练习。", "practice-v3.png"],
+  ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的练习。", "collaboration-group.png"],
   ["jianji-collaboration", "见己软件", "把日常记录与回看融入课程和团体项目。", "collaboration-jianji.png"],
 ]) {
   const card = el("button", "", "collaboration-card");
@@ -550,10 +597,15 @@ const projectSpecs=[
  ]}
 ];
 const projectContent={};
-const customGroupNote = el("section", "", "project-entry custom-detail");
-customGroupNote.append(el("h2", "定制团体活动"),
+const customGroupNote = el("section", "", "project-entry illustrated-detail");
+const customGroupArt = el("img", "", "project-detail-art");
+customGroupArt.src = "assets/collaboration-group.png";
+customGroupArt.alt = "";
+const customGroupCopy = el("div", "", "project-detail-copy");
+customGroupCopy.append(el("h2", "定制团体活动"),
   el("p", "如果你想为团队、机构或已有团体安排一次冥想或专题活动，我们可以先聊聊参与者是谁、希望回应什么需要，再一起确定活动的主题与形式。"),
   el("p", "活动环节可以结合现场安排，留出引导练习、交流和答疑的时间。"));
+customGroupNote.append(customGroupArt, customGroupCopy);
 projectContent["custom-group"] = customGroupNote;
 const jianjiCollaboration = el("section", "", "project-entry illustrated-detail");
 const jianjiDetailArt = el("img", "", "project-detail-art");

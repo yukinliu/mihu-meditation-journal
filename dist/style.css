@@ -4650,7 +4650,6 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
   border-radius:9px;
   filter:saturate(.82);
 }
-[data-project="custom-group"] .collaboration-art { object-fit:cover; }
 .training-sheet .collaboration-copy { display:grid; gap:3px; padding:0 19px 0 5px; }
 .collaboration-copy strong { font-size:1.08em; }
 .training-sheet .collaboration-arrow { top:auto; bottom:10px; right:8px; }
@@ -4960,3 +4959,61 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
   clip-path:polygon(0 100%,0 0,100% 0,100% 64%,73% 74%,44% 88%,20% 97%);
 }
 .design-seated-art { clip-path:inset(0 0 2% 0); }
+
+/* Keep page-level actions compact and product navigation discoverable. */
+.sheet > header .close-notebook,
+.sheet > header .header-actions { white-space:nowrap; flex-shrink:0; }
+.sheet > header .brand { min-width:0; }
+.sheet .meditation-actions .meditation-design-link {
+  min-height:40px;
+  border:1px solid #a07b4b70;
+  background-color:#e7cca0;
+  box-shadow:0 2px 6px #583b282d;
+}
+.sheet .meditation-actions .meditation-design-link:is(:hover,:focus-visible) {
+  background-color:#efd7ac;
+}
+.meditation-design .meditation-free-questions {
+  border:1px solid #a7896249;
+  padding:7px 10px;
+}
+.poster-viewer-image { touch-action:pan-y pinch-zoom; }
+.poster-viewer-tools {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(4px,2vw,12px);
+  color:#fff3df;
+  font-size:13px;
+}
+.poster-viewer-nav {
+  min-height:34px;
+  padding:3px 8px;
+  color:inherit;
+  background:#cba67835;
+  border:0;
+  border-radius:8px;
+  cursor:pointer;
+}
+.poster-viewer-nav:is(:hover,:focus-visible) { background:#cba67866; }
+
+@media(max-width:540px) {
+  .notebook > .sheet { padding-left:clamp(12px,4vw,20px); padding-right:clamp(38px,11.5vw,49px); gap:8px; }
+  .notebook > .sheet > header { align-items:center; gap:5px; padding-bottom:5px; }
+  .sheet > header .header-actions { gap:6px; }
+  .sheet > header .close-notebook { font-size:10px; }
+  .sheet > header button.contact-link { font-size:10px !important; }
+  .sheet > header .brand { font-size:clamp(13px,4vw,18px); }
+  .sheet > header .brand span { font-size:clamp(8px,2.4vw,10px); }
+  .reader-content .meditation-header h1 { white-space:nowrap; }
+  .sheet .meditation-actions .meditation-design-link { min-height:32px; }
+  .reader-content .restart-sheet { gap:12px; }
+  .reader-content .restart-diary { gap:8px; }
+  .reader-content .restart-part p { line-height:1.55; }
+  .reader-content .stranded-sheet .pause-art { height:clamp(83px,17dvh,138px); }
+  .reader-content .stranded-sheet .pause-top { margin-bottom:10px; }
+  .reader-content .stranded-sheet .pause-diary p { line-height:1.65; margin-bottom:12px; }
+  .training-sheet .collaboration-art { height:clamp(38px,7.3dvh,65px); }
+  .training-sheet .training-art { height:clamp(50px,9dvh,86px); }
+  .training-sheet .collaboration-contact { min-height:32px; }
+}
