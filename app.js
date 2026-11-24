@@ -275,12 +275,8 @@ designSheet.append(principles, freeQuestions);
 add("meditation-design", "meditation", "设计理念", [designSheet]);
 
 const customOptions = [
-  ["individual-practice", "一对一冥想", "匹配时间 · 定制内容", "一对一冥想",
-    "想开始冥想，却不知道先练什么；或者已经在练，反复遇到走神、昏沉、坐姿不适，想有人带着你具体试一试。",
-    "带走一段平时能自己做的练习，知道怎么开始、把注意放在哪里，以及遇到困难时可以怎么调整。"],
-  ["individual-extension", "心力发展", "建立主体性 · 重塑心理秩序 · 发展内在力量", "心力发展",
-    "工作、关系或生活阶段发生变化，想理清感受和生活方向。也适合想辨认自己的需要，在面对他人的期待时建立更清楚的边界的人。",
-    "一起梳理你在意的事、习惯的反应和可以尝试的选择。探索围绕清晰笃定、自我接纳、自我边界和内在稳定展开，会后提供探索小结。"],
+  ["individual-practice", "一对一冥想", "匹配时间 · 定制内容"],
+  ["individual-extension", "心力发展", "建立主体性 · 重塑心理秩序 · 发展内在力量"],
 ];
 const lifeSheet = el("section", "", "life-sheet jianji-sheet");
 function jianjiImage(file, alt = "") {
@@ -461,7 +457,7 @@ trainingArt.alt = "";
 trainingCopy.append(el("h2", "冥想带领者培训"), el("span", "筹备中", "status"),
   el("p", "从一段引导怎么设计，到走神、昏沉和坐姿不适时怎么调整。我正在把这些带练现场的问题，整理成可以一起学习和练习的内容。"));
 trainingPlan.append(trainingCopy, trainingArt);
-const collaborationContact = el("button", "微信聊聊合作", "meditation-contact collaboration-contact");
+const collaborationContact = el("button", "一起聊聊你的项目", "meditation-contact collaboration-contact");
 collaborationContact.type = "button";
 collaborationContact.dataset.contact = "";
 collaborationContact.setAttribute("aria-haspopup", "dialog");
@@ -602,7 +598,7 @@ projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[]},i)=>{
  button.append(el("span", label), artwork);
  projectStrip.append(button);
 });
-for (const [index, [key, label, summary, title, audience, takeaway]] of customOptions.entries()) {
+for (const [index, [key, label, summary]] of customOptions.entries()) {
   const card = el("button", "", "custom-card");
   card.type = "button";
   card.dataset.project = key;
@@ -617,7 +613,7 @@ for (const [index, [key, label, summary, title, audience, takeaway]] of customOp
   const illustration = el("span", "", "custom-illustration");
   if (index === 0) {
     card.classList.add("meditation-solo-card");
-    copy.append(el("span", "了解一对一冥想", "meditation-card-action"));
+    copy.append(el("span", "开启冥想之旅", "meditation-card-action"));
   } else {
     card.classList.add("meditation-mind-card");
     const arrow = el("span", "→", "meditation-card-arrow");
@@ -640,31 +636,17 @@ for (const [index, [key, label, summary, title, audience, takeaway]] of customOp
     projectContent[key] = note;
     continue;
   }
-  note.classList.add("solo-detail");
-  const soloHeader = el("header", "", "solo-detail-header");
-  soloHeader.append(clone(artwork), el("h2", title),
-    el("p", "从一次真实的练习出发，找到你平时也能用的方法。"));
-  note.append(soloHeader, el("h3", "适合这样的你"), el("p", audience));
-  const example = el("aside", "", "solo-example");
-  example.append(el("h3", "比如，走神时可以怎么做？"),
-    el("p", "如果盯着呼吸反而觉得紧绷，我们可以试着把注意放在脚掌接触地面的感觉上。发现走神时，先感受脚底哪里有压力，再把注意轻轻带回来。"));
-  note.append(example);
-  note.append(el("h3", "一次练习怎么进行"));
-  const session = el("ol", "", "solo-session");
-  for (const [heading, description] of [
-    ["微信沟通", "先了解你想练什么、平时怎么练，再确认安排和费用。"],
-    ["腾讯会议带练", "一起试一段练习，按你的感受调整方法和节奏。"],
-    ["练后回看", "聊聊刚才哪些做法适合你，确定接下来可以怎么练。"],
-  ]) {
-    const step = el("li");
-    step.append(el("strong", heading), el("p", description));
-    session.append(step);
-  }
-  const soloContact = el("button", "微信了解一对一安排", "meditation-contact");
-  soloContact.type = "button";
-  soloContact.dataset.contact = "";
-  soloContact.setAttribute("aria-haspopup", "dialog");
-  note.append(session, el("h3", "可以带走什么"), el("p", takeaway), soloContact);
+  note.className = "project-entry illustrated-detail";
+  const soloArt = clone(artwork);
+  soloArt.className = "project-detail-art";
+  const soloCopy = el("div", "", "project-detail-copy");
+  soloCopy.append(
+    el("h2", "开启冥想之旅"),
+    el("p", "如果你在团体共练之外，想针对一个具体的练习问题多试一试，我们可以一起看看一对一引导是否适合你。"),
+    el("p", "从你当下的状态和想练的方向出发，选择合适的方法，在带领中根据你的体验调整。", "project-detail-highlight"),
+    el("p", "有需要的话，可以在共练后告诉我，我会根据你的情况单独介绍。")
+  );
+  note.append(soloArt, soloCopy);
   projectContent[key] = note;
 }
 restartSheet.append(restartDiary,projectStrip);
