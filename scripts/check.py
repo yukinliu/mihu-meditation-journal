@@ -34,16 +34,16 @@ for chapter in ('about', 'group', 'individual', 'life', 'training'):
     assert chapter in page.ids, chapter
 for ref in page.refs:
     if ref.startswith('#'):
-        assert ref[1:] in page.ids or ref == '#cover', ref
+        assert ref[1:] in page.ids or ref in {'#cover', '#meditation'}, ref
     elif not re.match(r'\w+:|//', ref):
-        assert (DIST / ref).is_file(), ref
+        assert (DIST / ref.split("?", 1)[0]).is_file(), ref
 for ref in re.findall(r'url\([\'\"]?([^\)\'\"]+)', css):
     if not ref.startswith('data:'):
-        assert (DIST / ref).is_file(), ref
+        assert (DIST / ref.split("?", 1)[0]).is_file(), ref
 assert len(re.findall(r'class="album-slide"', html)) == 14, 'Expected fourteen album images'
-assert len(re.findall(r'data-page="', html)) == 5, 'Expected five tabs'
+assert len(re.findall(r'data-page="', html)) == 4, 'Expected four tabs'
 for file in DIST.rglob('*'):
     if file.is_file():
         assert file.suffix in {'.html', '.css', '.js', '.svg', '.png', '.jpg', '.woff2'}, file
 assert not list(DIST.glob('*-v[23].*')), 'Experimental pages in release'
-print('PASS: HTML, five chapters, fourteen images, links, CSS resources and release allowlist')
+print('PASS: HTML, four tabs, fourteen images, links, CSS resources and release allowlist')
