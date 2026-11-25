@@ -9,7 +9,7 @@
       content="刘迷糊的个人手帐：正念冥想研究、团体冥想、一对一定制练习，以及日常的觉察与记录。"
     />
     <title>刘迷糊｜冥想与生活手帐</title>
-    <link rel="stylesheet" href="style.css?v=1.4.1-2" />
+    <link rel="stylesheet" href="style.css?v=1.5.0" />
   </head>
   <body class="cover-mode">
     <a class="skip" href="#page">跳到正文</a>
@@ -22,40 +22,29 @@
         <nav class="tabs" aria-label="手帐章节">
           <a href="#about" data-page="about" class="active" aria-current="page"
             ><span>我与冥想</span></a
-          ><a href="#meditation" data-page="meditation"><span>冥想练习</span></a
+          ><a href="#meditation" data-page="meditation"><span>科学练冥想</span></a
           ><a href="#life" data-page="life"><span>正念生活</span></a
           ><a href="#training" data-page="training"><span>合作与培训</span></a>
         </nav>
-        <button
-          type="button"
-          id="book-cover"
-          class="book-cover"
-          aria-label="翻开刘迷糊的冥想手帐"
-        >
-          <span class="cover-title hand">刘迷糊与冥想</span
-          ><span class="cover-subtitle">自我练习 · 冥想引导 · 研究</span
-          ><img
-            src="assets/brand-mark.png"
-            class="cover-brand-mark"
-            alt=""
-            width="1024"
-            height="1536"
-          /><span class="cover-date">从 2013 年的触动开始</span>
-        </button>
+        <section id="book-cover" class="book-cover" aria-label="刘迷糊与冥想">
+          <a class="cover-open-area" href="#about" aria-label="翻开手账"></a>
+          <div class="cover-plate">
+            <img src="assets/journal-cover-illustrated.png" width="999" height="1575"
+              alt="刘迷糊与冥想。缘起 2013 年的触动，在练习、带领与研究中持续探索。" />
+            <a class="cover-practice-area" href="#meditation" aria-label="看看适合我的练习"></a>
+            <a class="cover-about-area" href="#about" aria-label="认识刘迷糊"></a>
+          </div>
+        </section>
         <div class="sheet">
           <header>
-            <a href="#cover" class="brand" aria-label="回到手帐封面"
-              ><img
-                class="header-brand-mark"
-                src="assets/brand-mark.png"
-                alt=""
-                width="40"
-                height="40"
-              />刘迷糊 <span>｜念起觉心 · 知深见己</span></a
-            >
+            <a href="#cover" class="brand journal-brand" aria-label="刘迷糊｜念起觉心 · 知深见己，返回封面">
+              <img src="assets/journal-mark.png" alt="" />
+              <img src="assets/journal-wordmark.png" alt="" />
+              <span class="journal-motto">念起觉心 · 知深见己</span>
+            </a>
             <div class="header-actions">
               <a class="close-notebook" href="#cover">返回封面</a
-              ><button type="button" class="contact-link" data-contact aria-haspopup="dialog"><span class="wechat-bubbles" aria-hidden="true"></span>微信联系刘迷糊</button>
+              ><button type="button" class="contact-link" data-contact aria-haspopup="dialog"><span class="wechat-bubbles" aria-hidden="true"></span>联系刘迷糊</button>
             </div>
           </header>
           <main id="page" tabindex="-1">
@@ -703,7 +692,11 @@
           ><img src="assets/wechat.jpg" alt=""
         /></span>
       </div>
+      <div class="qr-caption">
+        <p>了解冥想、加入练习或意向合作，都可以从这里开始</p>
+        <p>添加微信时，可以告诉我：你想了解什么</p>
+      </div>
     </dialog>
-    <script src="app.js?v=1.4.1-2"></script>
+    <script src="app.js?v=1.5.0"></script>
   </body>
 </html>

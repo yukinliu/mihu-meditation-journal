@@ -62,7 +62,7 @@ function blocks(node) {
 }
 const about = original.about;
 const intro=el('div','','intro-sheet');
-const introTop=el('div','','intro-top');const identity=el('div','','intro-identity');identity.append(el('h1','你好，我是刘迷糊。'),el('p','浙江大学心理系硕士在读，研究方向正念冥想，持续实践冥想带练。'));const portrait=clone(about.querySelector('.portrait'));portrait.querySelector('img').src='assets/portrait-cutout.png';portrait.querySelector('figcaption')?.remove();identity.append(el('p','2013 年起冥想便成为了我生活的一部分。','intro-bridge'));introTop.append(identity,portrait);intro.append(introTop);
+const introTop=el('div','','intro-top');const identity=el('div','','intro-identity');identity.append(el('h1','你好，我是刘迷糊'),el('p','浙江大学心理学硕士，正念冥想研究者、练习者与带领者。','intro-credentials'),el('p','关注：如何让冥想练习更科学有效，以及如何让冥想中的收获在日常生活中真正发挥作用。','intro-focus'));const portrait=clone(about.querySelector('.portrait'));portrait.querySelector('img').src='assets/portrait-cutout.png';portrait.querySelector('figcaption')?.remove();introTop.append(identity,portrait);intro.append(introTop);
 const map = el("nav", "", "home-journey");
 map.setAttribute("aria-label", "冥想历程");
 function artworkCrop(left, top, width, height, className) {
@@ -73,10 +73,6 @@ function artworkCrop(left, top, width, height, className) {
   crop.setAttribute("aria-hidden", "true");
   return crop;
 }
-const hills = el("img", "", "home-hills");
-hills.src = "assets/home-mist.png";
-hills.alt = "";
-map.append(hills);
 const journeyRoute = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 journeyRoute.setAttribute("viewBox", "0 0 600 400");
 journeyRoute.setAttribute("preserveAspectRatio", "none");
@@ -97,10 +93,10 @@ routePath.setAttribute("filter", "url(#journey-paper-wear)");
 journeyRoute.append(routePath);
 map.append(journeyRoute);
 for (const [key, year, label] of [
-  ["origin", "2013—2015", "初识与断断续续"],
-  ["practice", "2015—2022", "规律练习与引导"],
-  ["pause", "2023", "自我怀疑与搁浅"],
-  ["research", "2024—至今", "科研与实践"],
+  ["origin", "2013—2015", "带着好奇，初识冥想"],
+  ["practice", "2015—2022", "规律练习与带领"],
+  ["pause", "2023", "迷茫不定，暂停带练"],
+  ["research", "2024—至今", "科研与实践结合"],
 ]) {
   const stop = el("a", "", "home-journey-link");
   stop.href = "#" + key;
@@ -217,8 +213,7 @@ add("origin", "about", "从好奇开始", [
 const group = original.group;
 const meditationSheet = el("section", "", "meditation-sheet");
 const meditationHeader = el("header", "", "meditation-header");
-meditationHeader.append(el("h1", "科学冥想"),
-  el("p", "理论与实践结合 · 掌握方法 · 连接日常生活"));
+meditationHeader.append(el("h1", "由练习开始，慢慢丰盛日常"));
 const customCards = el("div", "", "custom-cards meditation-services");
 const groupCard = el("button", "", "custom-card meditation-group-card");
 groupCard.type = "button";
@@ -227,36 +222,41 @@ groupCard.setAttribute("aria-haspopup", "dialog");
 const groupArtwork = clone(group.querySelector(".scene img"));
 groupArtwork.alt = "";
 const groupCopy = el("span", "", "custom-card-copy");
-groupCopy.append(el("strong", "团体冥想"), el("span", "安坐观己 · 共练链接 · 众行致远"),
-  el("span", "加入团体共练", "meditation-card-action"));
+groupCopy.append(el("strong", "团体冥想"), el("span", "在群体的抱持中，借由彼此的照见，慢慢建立稳定的练习节奏"),
+  el("span", "适合：想开始冥想，或需要一点外在动力陪伴的你", "meditation-card-fit"),
+  el("span", "加入共练", "meditation-card-action"));
 groupCard.append(groupArtwork, groupCopy);
 customCards.append(groupCard);
-const meditationActions = el("footer", "", "meditation-actions");
-const designLink = el("a", "", "meditation-design-link");
+const designLink = el("a", "了解练习设计理念", "meditation-method-link");
 designLink.href = "#meditation-design";
-const pageArrow = el("span", "↗");
+const pageArrow = el("span", "›");
 pageArrow.setAttribute("aria-hidden", "true");
-designLink.append(el("strong", "设计理念"), el("small", "练习层次 · 觉察与接纳"), pageArrow);
-meditationActions.append(designLink);
-meditationSheet.append(meditationHeader, customCards, meditationActions);
-add("meditation", "meditation", "冥想练习", [meditationSheet]);
+designLink.append(pageArrow);
+meditationHeader.append(designLink);
+const meditationFooter = el("footer", "", "meditation-practice-footer");
+meditationFooter.append(el("p", "每一次练习，都是回到自己的过程。"),
+  el("p"));
+const meditationContactHint = meditationFooter.lastElementChild;
+meditationContactHint.append(el("strong", "还不确定怎么选？", "journal-emphasis"), " 点击右上角“联系刘迷糊”，讨论看看");
+meditationSheet.append(meditationHeader, customCards, meditationFooter);
+add("meditation", "meditation", "科学练冥想", [meditationSheet]);
 
 const designSheet = el("section", "", "meditation-sheet meditation-design");
 designSheet.append(el("h1", "科学冥想 · 设计理念"),
-  el("p", "理论与实践结合 · 掌握方法 · 连接日常生活", "design-subtitle"));
+  el("p", "理论与实践结合 · 掌握方法 · 连接日常生活。", "design-subtitle"));
 const designHero = el("figure", "", "design-hero");
 const seatedFigure = artworkCrop(132, 8, 493, 474, "design-warm-crop design-seated-art");
 const pathFigure = artworkCrop(666, 0, 774, 417, "design-warm-crop design-stage-art");
 const journeyCaption = el("figcaption", "", "design-path-labels");
-for (const label of ["跟随引导", "掌握方法", "自主练习"]) journeyCaption.append(el("span", label));
+for (const label of ["跟随引导", "熟悉方法", "逐步自主练习"]) journeyCaption.append(el("span", label));
 designHero.append(seatedFigure, pathFigure, journeyCaption);
 designSheet.append(designHero);
 const principles = el("div", "", "design-principles");
 for (const [style, title, copy, crop] of [
-  ["steps", "循序渐进", "从应对练习障碍开始，安顿身心，逐步探索更丰富的冥想体验。", [103, 490, 651, 226]],
-  ["focus", "掌握方法", "采用聚焦注意与开放监控冥想，理解练习的目的，逐渐辨别并选择适合自己的方法。", [837, 392, 539, 323]],
-  ["awareness", "觉察与接纳并重", "两者共同作用，支持我们在练习和生活中更从容地回应。", [95, 718, 610, 300]],
-  ["notes", "持续迭代", "100 余场带练与 4 轮重要迭代。结合实践、研究和参与者反馈，持续深化与拓展。", [751, 713, 640, 306]],
+  ["steps", "循序渐进", "从走神、昏沉、身体不适等常见问题开始，逐步熟悉练习。根据自己的状态调整，不必急着追求某一种体验。", [103, 490, 651, 226]],
+  ["focus", "理解方法", "结合“聚焦注意”与“开放监控”等经典冥想方法，说明练习目的、注意对象与调整方式，让你逐渐知道如何练习、如何选择。", [837, 392, 539, 323]],
+  ["awareness", "觉察与接纳并重", "既练习看见正在发生什么，也练习给当下的体验留出空间，把这份理解带到日常的回应中。", [95, 718, 610, 300]],
+  ["notes", "持续调整", "经过 100 余场带练与 4 轮重要迭代，结合研究、实际带领与参与者反馈，持续拓展练习内容和引导方式。", [751, 713, 640, 306]],
 ]) {
   const entry = el("section", "", "design-principle");
   const art = el("div", "", "design-art");
@@ -266,18 +266,20 @@ for (const [style, title, copy, crop] of [
   entry.append(art, text);
   principles.append(entry);
 }
-const freeQuestions = el("button", "", "meditation-free-questions");
+const designQuestions = el("section", "", "design-questions");
+const questionsBody = el("p", "如果你对冥想好奇，或者练习中遇到了不知道怎么处理的疑问，都可以随时找我。");
+questionsBody.append(el("strong", "无论你是否购买了服务，都欢迎你问。", "journal-emphasis"), "对我而言，解答这些问题也是梳理和精进的过程。");
+const freeQuestions = el("button", "问个问题", "meditation-contact");
 freeQuestions.type = "button";
 freeQuestions.dataset.contact = "";
 freeQuestions.setAttribute("aria-haspopup", "dialog");
-freeQuestions.append(el("strong", "免费答疑解惑"), document.createTextNode("　对冥想好奇？练习遇到问题？都可以。唠个有关冥想的嗑。"));
-designHero.before(freeQuestions);
-designSheet.append(principles);
+designQuestions.append(el("h2", "有问题，随时可以聊聊"), questionsBody, freeQuestions);
+designSheet.append(principles, designQuestions);
 add("meditation-design", "meditation", "设计理念", [designSheet]);
 
 const customOptions = [
-  ["individual-practice", "一对一冥想", "匹配时间 · 定制内容"],
-  ["individual-extension", "心力发展", "建立主体性 · 重塑心理秩序 · 发展内在力量"],
+  ["individual-practice", "一对一冥想", "围绕你当下的具体卡点（如焦虑、走神），量身调整练习方案", "时间灵活，希望针对个人状态做深度探索的你", "了解定制"],
+  ["individual-extension", "心力发展", "通过线上深度对话，结合正念、图卡与叙事，理清关系与选择。", "正经历人生转折，渴望梳理边界与内心秩序的你。", "启动心力发展"],
 ];
 const lifeSheet = el("section", "", "life-sheet jianji-sheet");
 function jianjiImage(file, alt = "") {
@@ -288,12 +290,16 @@ function jianjiImage(file, alt = "") {
   return img;
 }
 const lifeHeading = el("div", "", "jianji-heading");
-lifeHeading.append(el("h1", "见己 · 自我觉察与成长记录"));
-const lifeIntro = el("p", "见己是一款电脑端记录工具。把感受、想法与经历留下来，按日期和项目回看。");
+lifeHeading.append(el("h1", "见己｜把日常留下来，慢慢看见自己"));
+const lifeIntro = el("p", "日常感受、想法，练习中的发现，还有一天里发生的微小片段，都可以成为理解自己的线索。见己是一款电脑端记录工具（支持 Mac / Windows），不打卡、不评分，只为让你随手记下当下，需要时能找回理解。");
 const lifeGallery = makePosterGallery("见己图文", "jianji-poster-original", [
   "见己简介",
   "写作、学习、工作与生活记录",
   "记录、汇总、保存、搜索与回看，附见己下载二维码",
+  "见己实际界面：记录",
+  "见己实际界面：明细",
+  "见己实际界面：项目",
+  "见己实际界面：统计",
 ]);
 const downloadQR = jianjiImage("download-sticker", "见己软件下载二维码，扫码下载，免费使用");
 downloadQR.loading = "eager";
@@ -311,6 +317,9 @@ function makePosterGallery(label, filePrefix, descriptions) {
     const poster = filePrefix ? el("img") : el("div", "", "poster-placeholder");
     if (filePrefix) {
       poster.src = "assets/" + filePrefix + "-" + (index + 1) + ".png";
+      if (filePrefix === "online-meditation") {
+        poster.src += "?v=1.5.0";
+      }
       poster.alt = description;
       poster.draggable = false;
     } else {
@@ -473,13 +482,15 @@ function bindPosterGallery(root) {
 }
 const trainingSheet = el("section", "", "training-sheet");
 const collaboration = el("section", "", "collaboration-section");
-collaboration.append(el("p", "想把正念练习带给你们的团队，或把日常记录融入正在做的项目？可以从下面几个方向聊起。"));
+const collaborationIntro = el("p", "面向团队、机构与项目组织者。如果你希望开展冥想活动、情绪调节、支持家长群体，或需要一款日常记录软件，");
+collaborationIntro.append(el("strong", "我们可以一起，为你的参与者量身定制贴合他们当下需求的方案。", "journal-emphasis"));
+collaboration.append(collaborationIntro);
 const collaborationCards = el("div", "", "collaboration-cards");
 for (const [key, title, summary, imageFile] of [
-  ["merp", "21 天正念情绪调节", "每天 15 分钟，把情绪觉察与调节练进日常。", "project-vignette-merp.png"],
-  ["family", "4 周正念亲子团体", "从家长的情绪觉察入手，把练习带回亲子相处。", "project-vignette-family.png"],
-  ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的练习。", "collaboration-group.png"],
-  ["jianji-collaboration", "见己软件", "把日常记录与回看融入课程和团体项目。", "collaboration-jianji.png"],
+  ["merp", "21 天正念情绪调节", "每天 15 分钟，以持续练习支持情绪觉察与调节", "project-vignette-merp.png"],
+  ["family", "4 周正念养育团辅", "从家长的情绪觉察入手，探索把练习带回日常亲子相处", "project-vignette-family.png"],
+  ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的冥想与心理主题活动", "collaboration-group.png"],
+  ["jianji-collaboration", "见己记录软件", "一款懂你的电脑端记录工具，把感受、想法与经历留下来，在 AI 时代释放积累的价值", "collaboration-jianji.png"],
 ]) {
   const card = el("button", "", "collaboration-card");
   card.type = "button";
@@ -501,30 +512,31 @@ const trainingCopy = el("div");
 const trainingArt = el("img", "", "training-art");
 trainingArt.src = "assets/training-books.png";
 trainingArt.alt = "";
-trainingCopy.append(el("h2", "冥想带领者培训"), el("span", "筹备中", "status"),
-  el("p", "从一段引导怎么设计，到走神、昏沉和坐姿不适时怎么调整。我正在把这些带练现场的问题，整理成可以一起学习和练习的内容。"));
+trainingCopy.append(el("h2", "冥想带领者培训方案"), el("span", "进行中", "status"),
+  el("p", "正在把实际带领中反复遇到的问题，整理成体系化的课程：从冥想基础知识、方案设计、有效引导，到常见问题处理，以及带领能力的递进与评估。"), el("p", "如果你对带领者培训感兴趣，欢迎联系我交流。"));
 trainingPlan.append(trainingCopy, trainingArt);
-const collaborationContact = el("button", "一起聊聊你的项目", "meditation-contact collaboration-contact");
+const collaborationContact = el("button", "感兴趣？欢迎沟通合作", "meditation-contact collaboration-contact");
 collaborationContact.type = "button";
 collaborationContact.dataset.contact = "";
 collaborationContact.setAttribute("aria-haspopup", "dialog");
-trainingSheet.append(el("h1", "合作与培训"), collaboration, collaborationContact, trainingPlan);
+trainingSheet.append(collaboration, collaborationContact, trainingPlan);
 add("training", "training", "合作与培训", [trainingSheet]);
 // Confirmed opening three leaves, in chronological reading order.
 const originCopy = [
- '2013 年，我接触了冥想。起初练习断断续续，也说不清自己在寻找什么，只记得练习结束后，整个人很明亮、很舒服。',
- '最初两年，有几个片段一直留在记忆里。',
- '一次练习结束，老师在一旁弹起吉他，我忽然没来由地流了眼泪。',
- '一次呼吸法进修学习营里，我是年龄最小的一个，和老师、姐姐阿姨们一起，在山中学习。',
- '还有坐不了多久就酸痛的脚踝、久坐后发麻的双腿、烛光冥想时忍不住想眨眼的冲动……',
- '那时，我还不能理解这些体验。但这些瞬间，让我带着好奇，一次次靠近冥想。'
+  "起初练习断断续续，也说不清为什么练习。只记得结束后，整个人很明亮、很舒服。",
+  "最初两年，有几个片段一直留在记忆里。",
+  "一次练习结束，老师在一旁弹起吉他。我忽然流了眼泪，当时也不知道为什么。",
+  "彼时，我是年龄最小的参与者。和老师、姐姐阿姨们在山中学习的几天，新鲜，也好奇。",
+  "坐不了多久就酸痛的脚踝、久坐后发麻的双腿，还有烛光冥想时眨眼的冲动……",
+  "有不适，有迷惑，也有中断。但最初的触动和好奇，让我一次次回来。",
+  "后来带练，遇到各种各样的问题时，我会不断提醒自己：我们都会从这里走过。",
 ];
 const originSheet=el('div','','origin-sheet memory-leaf scrapbook-leaf');
-const originHeader=el('div','','memory-intro');originHeader.append(el('h1','最初，是一次没有预料到的触动。'),el('p',originCopy[0]));
+const originHeader=el('div','','memory-intro');originHeader.append(el('h1','预料之外的触动'),el('p',originCopy[0]));
 const memoryScenes = el("div", "", "memory-scenes");
 for (const [title, copy, file] of [
   ["吉他声里", originCopy[2], "memory-guitar.png"],
-  ["冥想呼吸法进修", originCopy[3], "memory-breathing-circle.png"],
+  ["呼吸法进修", originCopy[3], "memory-breathing-circle.png"],
   ["身体的记忆", originCopy[4], "memory-cushion.png"],
 ]) {
   const pair = el("section", "", "memory-pair");
@@ -536,17 +548,23 @@ for (const [title, copy, file] of [
   pair.append(note, illustration);
   memoryScenes.append(pair);
 }
-originSheet.append(originHeader, el("p", originCopy[1], "memory-preface"), memoryScenes, el("p", originCopy[5], "memory-ending"));
+originSheet.append(originHeader, el("p", originCopy[1], "memory-preface"), memoryScenes, el("p", originCopy[5], "memory-ending"), el("p", originCopy[6], "memory-ending memory-reflection"));
 Object.assign(sources.find(s=>s.id==='origin'),{title:'2013 初识冥想',nodes:[originSheet]});
-const practiceCopy=[
- '从 2015 年起，我开始规律练习，也逐渐带领线上、线下的团体与一对一冥想。在学习、练习与实际引导之间，持续积累自己的理解。',
- '那八年里，我没有系统记录带领过多少人、多少小时，只是全心投入其中。',
- '怎样看待自己、怎样与人相处、怎样面对不如意——冥想的影响，慢慢进入更广的生活。我更容易觉察念头和情绪，也多了一些选择怎样回应的空间。',
- '觉察、接纳、慈悲……从几个词，慢慢成为我理解和对待生活的方式。'
-];
-const practiceSheet=el('div','','practice-sheet'),practiceText=el('div','','practice-copy journal-writing'),practiceAlbum=clone(album);
-practiceAlbum.querySelector('.album-heading')?.remove();
-practiceText.append(el('h2','练习，也在带领中学习。','practice-subhead'),el('p',practiceCopy[0]),el('p',practiceCopy[1],'practice-aside'),el('h2','慢慢进入生活。','practice-subhead'),el('p',practiceCopy[2]),el('blockquote',practiceCopy[3],'practice-takeaway'));
+const practiceSheet = el("div", "", "practice-sheet");
+const practiceText = el("div", "", "practice-copy journal-writing");
+const practiceAlbum = clone(album);
+practiceAlbum.querySelector(".album-heading")?.remove();
+practiceAlbum.setAttribute("aria-label", "带领与进修时刻");
+practiceText.append(
+  el("h2", "教学相长", "practice-subhead"),
+  el("p", "从 2015 年起，我开始规律练习，也带领线下冥想。"),
+  el("p", "怎样把引导说清楚？遇到走神、昏沉或身体不适时，怎样调整？面对不同的人，同一种方法又会带来怎样的体验？"),
+  el("p", "这些问题，陪着我在学习、练习与带领之间不断往返。"),
+  el("p", "那八年里，我没有统计过带领的人数与时长，但那些相遇与实践，慢慢沉淀为后来生活、研究与方案设计的养分。", "practice-aside"),
+  el("h2", "正念，进入生活", "practice-subhead"),
+  el("p", "我开始更容易注意到自己的念头和情绪。在一些原本会立刻反应的时刻，也多了一点停下来、选择如何回应的空间。"),
+  el("blockquote", "觉察、接纳、慈悲......从几个词，慢慢成为我理解自己、对待他人与生活的方式。", "practice-takeaway"),
+);
 const albumControls = el("div", "", "practice-album-controls");
 const albumCounter = practiceAlbum.querySelector(".album-count");
 for (const [direction, label, glyph] of [[-1, "上一张照片", "‹"], [1, "下一张照片", "›"]]) {
@@ -558,53 +576,97 @@ for (const [direction, label, glyph] of [[-1, "上一张照片", "‹"], [1, "�
   albumControls.append(button);
 }
 practiceAlbum.append(albumControls);
-practiceSheet.append(el("h1", "从自己练习，到带领他人。"), practiceAlbum, practiceText);
+const albumSection = el("section", "", "practice-album-section");
+albumSection.append(el("h2", "带领与进修时刻", "practice-album-title"), practiceAlbum);
+practiceSheet.append(el("h1", "从垫上到生活"), albumSection, practiceText);
 Object.assign(sources.find(s=>s.id==='practice'),{title:'八年实践',nodes:[practiceSheet]});
-const pauseCopy=[
- '现实中的变动与挑战，让我开始怀疑把冥想继续做下去的可能。我暂停了带领，一边备考浙江大学心理系研究生，一边做产品经理的工作。',
- '冥想在这段时间更多地是自我调节，图书馆里学累了、注意力散了，静静地坐一会儿。'
+const pauseCopy = [
+  "生活里的变动与挑战，让我迷茫：是否还要继续走冥想带领这条路？",
+  "我暂停了带领，一边做产品经理，一边备考浙江大学心理系研究生。",
+  "那段时间，冥想停留在生活里。图书馆里学累了、注意力散了，就静静坐一会儿，再回到眼前的事情。",
+  "暂停给了我一段空间，重新看待这些年的投入，也重新确认接下来想走的路。",
+  "这段经历，也让我更尊重每个人的节奏——大到人生方向，小到练习中的搁置与重新开始。",
 ];
-const pauseSheet=el('div','','pause-sheet scrapbook-leaf stranded-sheet');const pauseArt=el('img','','pause-art');pauseArt.src='assets/home-pause.png';pauseArt.alt='桌前思考的自己，身边是书、杯子和计划本';
-const pauseTop=el('div','','pause-top');pauseTop.append(el('h1','搁浅'),pauseArt);
+const pauseSheet = el("div", "", "pause-sheet scrapbook-leaf stranded-sheet");
+const pauseArt = el("img", "", "pause-art");
+pauseArt.src = "assets/home-pause.png";
+pauseArt.alt = "桌前思考的自己，身边有一摞书";
+const pauseTitle = el("div", "", "pause-heading");
+pauseTitle.append(el("h1", "重新思考方向"));
+const pauseTop = el("div", "", "pause-top");
+pauseTop.append(pauseTitle, pauseArt);
 const pauseDiary=el('div','','pause-diary journal-writing');pauseDiary.append(...pauseCopy.map(t=>el('p',t)));const pauseStillLife = el("img", "", "pause-still-life");
 pauseStillLife.src = "assets/pause-desk-vignette.png";
 pauseStillLife.alt = "";
 pauseDiary.append(pauseStillLife);
 pauseSheet.append(pauseTop, pauseDiary);
-Object.assign(sources.find(s=>s.id==='pause'),{title:'2023搁浅',nodes:[pauseSheet]});
-const restartCopy=[
- '进入浙江大学心理系，选择研究方向时，我仍然纠结：喜欢冥想，也担心过去实践中遇到的现实问题。直到一个晚上，从图书馆回家的路上，我忽然清楚地知道：“还是选择正念冥想。”那一刻，心里涌起了与初识冥想时相似的触动。',
- '我把多年练习和带领中积累的好奇带进研究：不同的练习方法与设计，会怎样影响注意、觉察、接纳和情绪体验？练习里的变化，能否保留下来，进入日常生活？',
- '我希望把研究中的理解带回引导与方案设计，让练习更清楚地回应人的需要，也让自己的设计有更充分的依据、能更清楚地解释。'
+Object.assign(sources.find(s=>s.id==='pause'),{title:'2023 搁浅',nodes:[pauseSheet]});
+const restartSheet = el("div", "", "restart-sheet scrapbook-leaf");
+restartSheet.append(el("h1", "也许是冥想又一次选择了我"));
+const restartDiary = el("div", "", "restart-diary");
+for (const [title, ...paragraphs] of [
+  ["重新出发", "进入浙大心理系后，选研究方向时，我经历了两个月的纠结、迷茫和焦虑。有太多让我换个方向的理由，但我无法忽视内心的悸动："],
+  ["把经验回答不了的好奇，带进研究", "不同的练习方式，会怎样影响注意、觉察、接纳与情绪体验？", "练习当下的变化，能否延续到日常生活？", "这些来自多年练习与带领的问题，成了我继续探索的方向。"],
+  ["把理解，带回实践", "我希望让每一种练习的预期更清晰，让引导与安排更贴近参与者的需要，也更坦诚地说明它能做什么，以及还有哪些问题值得继续探究。"],
+]) {
+  const part = el("section", "", "restart-part");
+  part.append(el("h2", title), ...paragraphs.map(text => el("p", text)));
+  restartDiary.append(part);
+}
+const restartMemories = el("ul");
+for (const text of [
+  "某天深夜，从图书馆回家的路上，初步决定重拾冥想时，莫名感动落泪；",
+  "梦里选了冥想方向，一位师兄带我一起做研究（后来事实果真如此，只是梦里的师兄做的是冥想在企业场景中的应用）；",
+  "见完导师、选定方向后，一切似乎都没变，但“心”里的一切都顺畅了。",
+]) restartMemories.append(el("li", text));
+restartDiary.firstElementChild.append(restartMemories);
+const projectStrip = el("div", "", "project-strip illustrated-projects");
+projectStrip.setAttribute("aria-label", "研究项目");
+const projectSection = el("section", "", "restart-projects");
+projectSection.append(projectStrip);
+const award = "项目获 2026 年浙江大学心理系应用心理大赛三等奖。";
+const projectSpecs = [
+  {key:"vr", label:"VR 冥想研究", title:"VR 冥想：技术带来的体验，能否延续到日常？", paragraphs:[
+    "相关成果以第一作者身份发表于",
+    "研究比较了三种练习方式：普通音频引导、VR 场景冥想，以及加入实时脑电反馈的 VR 冥想。",
+    "初学者完成 4 周练习，并在 3 个月后接受追踪；研究同时关注练习体验、脑电记录与日常正念倾向的变化。",
+    "研究结果也让我继续思考：什么样的练习，能让冥想中的体验不只停留在当下，而更可能转化为日常生活里更持久的变化？",
+  ], links:[["阅读文章","https://doi.org/10.1016/j.chbr.2026.101376"]]},
+  {key:"family", label:"4 周正念养育团体", title:"从家长的觉察，走向亲子互动", paragraphs:[
+    "这是一套为家长设计的 4 周正念养育团体方案，由我独立设计。",
+    "通过正念冥想与团体交流，练习觉察自己的情绪与反应，探索怎样把觉察与调节带入亲子互动。",
+  ], feedback:["我觉得我在慢慢学会接纳生活中的一些‘错误’和‘意外’","虽然有焦急，……而是耐心等待他完成，最终当他走出书房时，我很欣喜"], result:award, action:"扫码了解项目合作"},
+  {key:"merp", label:"21 天正念情绪调节", title:"每天 15 分钟，留意情绪，也练习如何回应。", paragraphs:[
+    "21 天正念情绪调节（MERP）是我独立设计的练习方案。",
+    "通过每天 15 分钟的冥想练习，支持参与者觉察情绪与惯常反应，逐步探索更适合自己的回应方式。",
+  ], feedback:["我注视到了身体的信号，我接受一些不舒服，内心仿佛更豁达了……","用很具体的方法，体会呼吸的深远和力度，……这样也可以减少走神的频次。"], result:"截至 2026 年 11 月，已有近 400 人加入练习。"+award, action:"扫码了解练习或讨论合作"},
 ];
-const restartSheet=el('div','','restart-sheet scrapbook-leaf');restartSheet.append(el('h1','重新选择，带着这些年的问题。'));
-const restartDiary=el('div','','restart-diary');
-[['重新确认选择',restartCopy[0]],['把问题带进研究',restartCopy[1]],['再把理解带回实践',restartCopy[2]]].forEach(([title,text])=>{const part=el('section','','restart-part');part.append(el('h2',title),el('p',text));restartDiary.append(part);});
-const projectStrip=el('div','','project-strip illustrated-projects');projectStrip.setAttribute('aria-label','展开研究与原创项目');
-const projectSpecs=[
- {key:'vr',label:'VR 冥想论文',title:'VR 冥想中的体验与变化',paragraphs:[
- '研究成果以第一作者身份，发表在 Computers in Human Behavior Reports（五年影响因子 7.3）。',
- '这项研究比较了普通音频引导、VR 场景，以及加入实时脑电反馈的 VR 冥想。94 位初学者完成 4 周练习，并在 3 个月后接受追踪；研究同时关注练习体验、脑电记录与日常正念倾向的变化。',
- '在这项研究中，三种方式下的日常正念倾向均有改善，但 VR 与脑电反馈没有表现出额外优势。技术带来的沉浸体验，是否能转化为日常生活中的变化，是我希望继续理解的问题。'
- ],links:[['查看发表信息 ↗','https://doi.org/10.1016/j.chbr.2026.101376'],['备用链接 ↗','https://www.sci-hub.vg/10.1016/j.chbr.2026.101376']]},
- {key:'family',label:'4 周正念亲子团辅',title:'4 周正念亲子团体辅导',paragraphs:[
- '独立原创设计，旨在通过正念冥想与团体辅导，提高家长的情绪觉察与调节能力，并带入亲子互动中，进而促进亲子关系。',
- '项目受参与家长的一致好评，并获 2026 年浙江大学心理系应用心理大赛三等奖。'
- ]},
- {key:'merp',label:'21 天正念情绪调节',title:'21 天正念情绪调节（MERP）',paragraphs:[
- '独立原创设计，通过每天 15 分钟的冥想练习，旨在提高情绪调节能力，促进主观幸福感。',
- '截至 2026 年 11 月，近 400 人加入练习。该项目获 2026 年浙江大学心理系应用心理大赛三等奖。'
- ]}
-];
+function projectContact(action) {
+  const contact = el("div", "", "project-contact");
+  contact.append(el("span", action), clone(document.querySelector("#contact-dialog .qr-crop")));
+  return contact;
+}
 const projectContent={};
 const customGroupNote = el("section", "", "project-entry illustrated-detail");
 const customGroupArt = el("img", "", "project-detail-art");
 customGroupArt.src = "assets/collaboration-group.png";
 customGroupArt.alt = "";
 const customGroupCopy = el("div", "", "project-detail-copy");
-customGroupCopy.append(el("h2", "定制团体活动"),
-  el("p", "如果你想为团队、机构或已有团体安排一次冥想或专题活动，我们可以先聊聊参与者是谁、希望回应什么需要，再一起确定活动的主题与形式。"),
-  el("p", "活动环节可以结合现场安排，留出引导练习、交流和答疑的时间。"));
+const collaborationSteps = el("ol", "", "collaboration-detail-list");
+for (const [title, description] of [
+  ["需求梳理", "一起沟通参与者的基本情况、期望解决的核心诉求（如缓解焦虑、改善沟通）以及现场条件。"],
+  ["方案定制", "结合心理学与正念冥想、主题交流和互动答疑，设计出有节奏的活动环节。"],
+  ["现场带领", "留出足够的体验和提问时间，让大家不仅“听懂”，也能“体验到”。"],
+  ["长期项目落地", "如果是周期性的长期项目，我们可以通过阶段性的练习与复盘，帮助参与者将觉察内化，切实改善情绪状态，提升团队的心理韧性与协作效能。"],
+]) {
+  const item = el("li");
+  item.append(el("strong", title + "：", "journal-emphasis"), description);
+  collaborationSteps.append(item);
+}
+customGroupCopy.append(el("h2", "定制团体活动：从真实需求出发"),
+  el("p", "无论是企业团队的减压放松、提升专注，还是特定机构的专题活动，一次有效的冥想体验，需要贴合参与者当下的状态。"),
+  el("h3", "我们可以这样合作"), collaborationSteps,
+  el("p", "如果你有初步的想法或具体的场景，欢迎随时与我联系。"), projectContact("沟通活动需求"));
 customGroupNote.append(customGroupArt, customGroupCopy);
 projectContent["custom-group"] = customGroupNote;
 const jianjiCollaboration = el("section", "", "project-entry illustrated-detail");
@@ -612,29 +674,52 @@ const jianjiDetailArt = el("img", "", "project-detail-art");
 jianjiDetailArt.src = "assets/collaboration-jianji.png";
 jianjiDetailArt.alt = "";
 const jianjiDetailCopy = el("div", "", "project-detail-copy");
-const jianjiLifeLink = el("a", "看看见己怎么用", "text-link");
-jianjiLifeLink.href = "#life";
+const jianjiFeatureButton = el("button", "查看见己功能", "text-link jianji-feature-button");
+jianjiFeatureButton.type = "button";
+jianjiFeatureButton.setAttribute("aria-haspopup", "dialog");
+jianjiFeatureButton.setAttribute("aria-controls", "jianji-feature-dialog");
+const jianjiIntro = el("p", "见己是一款本地优先的桌面记录工具（Mac / Windows），将工作、学习与生活记录融于一处。专为希望留下日常记录，积累灵感和素材、衔接进展与思路、复盘整理与自我成长的人设计。");
+const jianjiFeatures = el("ul", "", "collaboration-detail-list");
+for (const [title, description] of [
+  ["轻量无压力", "主观体验与事实经历分开，随手记下灵感与日常，哪怕一句话"],
+  ["隐私且克制", "纯本地存储（Markdown），不上云端，数据只属于你"],
+  ["全局检索", "随时找回过去的素材、疑问与进展"],
+  ["看见真实变化", "通过时间统计直观复盘，照见自己的状态"],
+]) {
+  const item = el("li");
+  item.append(el("strong", title + "：", "journal-emphasis"), description);
+  jianjiFeatures.append(item);
+}
+const jianjiDownload = el("div", "", "project-contact collaboration-download");
+jianjiDownload.append(jianjiFeatureButton, clone(downloadQR));
 jianjiDetailCopy.append(
-  el("span", "自我觉察与成长记录", "project-kicker"),
-  el("h2", "见己软件"),
-  el("p", "见己是一款电脑端记录工具，可以记下每天的感受、想法和练习体验，之后按日期、项目或关键词找回来。"),
-  el("p", "如果你的课程或团体项目有练后记录的环节，也可以把见己作为记录工具，让参与者回看自己在一段时间里的变化。", "project-detail-highlight"),
-  jianjiLifeLink
+  el("span", "见己 · 自我觉察与成长记录", "project-kicker"),
+  el("h2", "让每一次积累，在未来依然有意义"), jianjiIntro,
+  el("h3", "核心特点"), jianjiFeatures,
+  jianjiDownload
 );
 jianjiCollaboration.append(jianjiDetailArt, jianjiDetailCopy);
 projectContent["jianji-collaboration"] = jianjiCollaboration;
 const groupNote = el("section", "", "custom-detail service-poster-detail");
-const groupSignup = el("button", "微信了解本期安排", "meditation-contact group-signup");
-groupSignup.type = "button";
-groupSignup.dataset.contact = "";
-groupSignup.setAttribute("aria-haspopup", "dialog");
-groupNote.append(makePosterGallery("团体冥想图文", null, ["适合谁", "怎么练", "安排与费用"]), groupSignup);
+groupNote.append(makePosterGallery("团体冥想图文", "online-meditation", [
+  "线上冥想练习", "开始冥想", "你的冥想路径", "不只是练习", "刘迷糊与练习安排", "购买须知"
+]), projectContact("了解本期安排"));
 projectContent["meditation-group"] = groupNote;
-projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[]},i)=>{
+projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[],feedback,result,action},i)=>{
  const note = el("section", "", "project-entry illustrated-detail");
  const detailCopy = el("div", "", "project-detail-copy");
  detailCopy.append(el("span", i === 0 ? "研究手记" : "原创方案", "project-kicker"), el("h2", title));
- paragraphs.forEach((text,j)=>{const p=el('p',text);if(key==='vr'&&j===0){p.textContent='研究成果以第一作者身份，发表在 ';p.append(el('em','Computers in Human Behavior Reports'),document.createTextNode('（五年影响因子 7.3）。'));}if(j===paragraphs.length-1)p.classList.add('project-detail-highlight');detailCopy.append(p);});
+ paragraphs.forEach((text, index) => {
+   const p = el("p", text);
+   if (key === "vr" && index === 0) p.append(" ", el("em", "Computers in Human Behavior Reports"), "。");
+   detailCopy.append(p);
+ });
+ if (feedback) {
+   const remarks = el("section", "", "practice-feedback");
+   remarks.append(el("h3", "练习反馈"), ...feedback.map(text => el("blockquote", "“" + text + "”")));
+   detailCopy.append(remarks, el("p", result, "project-detail-highlight"));
+ }
+ if (action) detailCopy.append(projectContact(action));
  if(refs.length){const row=el('div','','project-references');refs.forEach(([label,url])=>{const a=el('a',label,'text-link');a.href=url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);});detailCopy.append(row);}
  projectContent[key] = note;
  const button = el("button", "", "project-slip");
@@ -647,10 +732,10 @@ projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[]},i)=>{
  const detailArt = clone(artwork);
  detailArt.className = "project-detail-art";
  note.append(detailArt, detailCopy);
- button.append(el("span", label), artwork);
+ button.append(el("span", label), artwork, el("small", "点击了解"));
  projectStrip.append(button);
 });
-for (const [index, [key, label, summary]] of customOptions.entries()) {
+for (const [index, [key, label, summary, fit, action]] of customOptions.entries()) {
   const card = el("button", "", "custom-card");
   card.type = "button";
   card.dataset.project = key;
@@ -661,17 +746,11 @@ for (const [index, [key, label, summary]] of customOptions.entries()) {
     : "assets/one-to-one-short-hair.png";
   artwork.alt = "";
   const copy = el("span", "", "custom-card-copy");
-  copy.append(el("strong", label), el("span", summary));
+  copy.append(el("strong", label), el("span", summary),
+    el("span", "适合：" + fit, "meditation-card-fit"),
+    el("span", action, "meditation-card-action"));
   const illustration = el("span", "", "custom-illustration");
-  if (index === 0) {
-    card.classList.add("meditation-solo-card");
-    copy.append(el("span", "开启冥想之旅", "meditation-card-action"));
-  } else {
-    card.classList.add("meditation-mind-card");
-    const arrow = el("span", "→", "meditation-card-arrow");
-    arrow.setAttribute("aria-hidden", "true");
-    copy.append(arrow);
-  }
+  card.classList.add(index === 0 ? "meditation-solo-card" : "meditation-mind-card");
   illustration.append(artwork);
   card.append(illustration, copy);
   customCards.append(card);
@@ -679,12 +758,17 @@ for (const [index, [key, label, summary]] of customOptions.entries()) {
   const note = el("section", "", "project-entry custom-detail");
   if (key === "individual-extension") {
     note.classList.add("service-poster-detail");
+    const consultation = el("button", "预约免费前置沟通", "meditation-contact practice-consultation");
+    consultation.type = "button";
+    consultation.dataset.contact = "";
+    consultation.setAttribute("aria-haspopup", "dialog");
     note.append(makePosterGallery("心力发展图文", "mind-poster", [
       "适合人群与收获",
       "服务流程与内容",
       "刘迷糊简介与常见问题",
       "价格与购买须知",
-    ]), el("small", "版权登记：国作登字-2026-A-00067097", "registration-note"));
+    ]), consultation,
+      el("small", "版权登记：国作登字-2026-A-00067097", "registration-note"));
     projectContent[key] = note;
     continue;
   }
@@ -692,16 +776,20 @@ for (const [index, [key, label, summary]] of customOptions.entries()) {
   const soloArt = clone(artwork);
   soloArt.className = "project-detail-art";
   const soloCopy = el("div", "", "project-detail-copy");
+  const soloMethod = el("section", "", "solo-practice-method");
+  soloMethod.append(el("h3", "会怎么练习？"), el("p", "从你当下的状态出发，一起选择合适的方法；在带领中，我也会根据你的实际体验随时调整。"));
   soloCopy.append(
-    el("h2", "开启冥想之旅"),
-    el("p", "如果你在团体共练之外，想针对一个具体的练习问题多试一试，我们可以一起看看一对一引导是否适合你。"),
-    el("p", "从你当下的状态和想练的方向出发，选择合适的方法，在带领中根据你的体验调整。", "project-detail-highlight"),
-    el("p", "有需要的话，可以在共练后告诉我，我会根据你的情况单独介绍。")
+    el("h2", "一对一冥想：为你量身调整"),
+    el("p", "如果你想要更具体的针对性练习，我们可以试试一对一"),
+    el("p", "每个人的卡点都不一样。如果你正面临特定的困扰（比如容易焦虑、注意力难以集中），或者时间比较碎片化，一对一的引导能为你提供更灵活、更个性化的支持。"),
+    soloMethod,
+    el("p", "如果你不确定这种形式是否适合自己，或者想先聊聊具体的练习困扰，欢迎随时联系我。我们聊聊，再决定下一步。", "solo-practice-invitation"),
+    projectContact("了解定制")
   );
   note.append(soloArt, soloCopy);
   projectContent[key] = note;
 }
-restartSheet.append(restartDiary,projectStrip);
+restartSheet.append(projectSection, restartDiary);
 Object.assign(sources.find(s=>s.id==='research'),{title:'2024 再出发',nodes:[restartSheet]});
 const projectDialog = el("dialog", "", "project-dialog");
 projectDialog.tabIndex = -1;
@@ -714,8 +802,35 @@ projectPaper.append(projectBody);
 projectDialog.append(projectPaper);
 document.body.append(projectDialog);
 
+const jianjiFeatureDialog = el("dialog", "", "jianji-feature-dialog");
+jianjiFeatureDialog.id = "jianji-feature-dialog";
+jianjiFeatureDialog.setAttribute("aria-labelledby", "jianji-feature-title");
+const jianjiFeatureTitle = el("h2", "见己功能");
+jianjiFeatureTitle.id = "jianji-feature-title";
+const jianjiFeatureBack = el("button", "返回介绍", "jianji-feature-button");
+jianjiFeatureBack.type = "button";
+jianjiFeatureBack.onclick = () => jianjiFeatureDialog.close();
+const jianjiFeatureHeader = el("header", "", "jianji-feature-header");
+jianjiFeatureHeader.append(jianjiFeatureTitle, jianjiFeatureBack);
+const jianjiFeatureStage = el("div", "", "jianji-sheet jianji-feature-stage");
+jianjiFeatureStage.append(clone(lifeGallery));
+jianjiFeatureDialog.append(jianjiFeatureHeader, jianjiFeatureStage);
+document.body.append(jianjiFeatureDialog);
+bindPosterGallery(jianjiFeatureStage);
+jianjiFeatureDialog.addEventListener("click", event => {
+  if (event.target === jianjiFeatureDialog) jianjiFeatureDialog.close();
+});
+jianjiFeatureDialog.addEventListener("close", () => {
+  projectDialog.querySelector(".jianji-feature-button")?.focus({ preventScroll: true });
+});
+
 let projectOpener;
 projectDialog.addEventListener("click", event => {
+  if (event.target.closest(".jianji-feature-button")) {
+    jianjiFeatureDialog.showModal();
+    return;
+  }
+  if (event.target.closest(".project-contact") && !event.target.closest("a")) return;
   if (event.target.closest(".custom-detail") && !event.target.closest("a")) return;
   projectDialog.close();
 });
@@ -910,7 +1025,6 @@ function route() {
   }
   render(key);
 }
-cover.onclick = () => (location.hash = "about");
 document.getElementById("prev").onclick = () => {
   const i = pages.findIndex((p) => p.key === current);
   if (i > 0) location.hash = pages[i - 1].key;
@@ -930,7 +1044,7 @@ document.addEventListener("click", (e) => {
 });
 dialog.addEventListener("close", () => opener?.focus());
 dialog.addEventListener("click", event => {
-  if (!event.target.closest(".qr-crop")) dialog.close();
+  if (!event.target.closest(".qr-crop, .qr-caption")) dialog.close();
 });
 function bindAlbum() {
   const album = content.querySelector(".history-album");
