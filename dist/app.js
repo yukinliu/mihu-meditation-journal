@@ -7,8 +7,7 @@ const roots = ["about", "group", "individual", "life", "training"];
 const original = Object.fromEntries(
   roots.map((id) => [id, document.getElementById(id)]),
 );
-const sources = [],
-  pages = [];
+const sources = [];
 const clone = (el) => el?.cloneNode(true);
 const el = (tag, text, cls) => {
   const n = document.createElement(tag);
@@ -487,7 +486,7 @@ collaborationIntro.append(el("strong", "我们可以一起，为你的参与者�
 collaboration.append(collaborationIntro);
 const collaborationCards = el("div", "", "collaboration-cards");
 for (const [key, title, summary, imageFile] of [
-  ["merp", "21 天正念情绪调节", "每天 15 分钟，以持续练习支持情绪觉察与调节", "project-vignette-merp.png"],
+  ["merp", "正念情绪调节", "每天 15 分钟，以持续练习支持情绪觉察与调节", "project-vignette-merp.png"],
   ["family", "4 周正念养育团辅", "从家长的情绪觉察入手，探索把练习带回日常亲子相处", "project-vignette-family.png"],
   ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的冥想与心理主题活动", "collaboration-group.png"],
   ["jianji-collaboration", "见己记录软件", "一款懂你的电脑端记录工具，把感受、想法与经历留下来，在 AI 时代释放积累的价值", "collaboration-jianji.png"],
@@ -636,8 +635,8 @@ const projectSpecs = [
     "这是一套为家长设计的 4 周正念养育团体方案，由我独立设计。",
     "通过正念冥想与团体交流，练习觉察自己的情绪与反应，探索怎样把觉察与调节带入亲子互动。",
   ], feedback:["我觉得我在慢慢学会接纳生活中的一些‘错误’和‘意外’","虽然有焦急，……而是耐心等待他完成，最终当他走出书房时，我很欣喜"], result:award, action:"扫码了解项目合作"},
-  {key:"merp", label:"21 天正念情绪调节", title:"每天 15 分钟，留意情绪，也练习如何回应。", paragraphs:[
-    "21 天正念情绪调节（MERP）是我独立设计的练习方案。",
+  {key:"merp", label:"正念情绪调节", title:"每天 15 分钟，留意情绪，也练习如何回应。", paragraphs:[
+    "正念情绪调节（MERP）是我独立设计的练习方案。",
     "通过每天 15 分钟的冥想练习，支持参与者觉察情绪与惯常反应，逐步探索更适合自己的回应方式。",
   ], feedback:["我注视到了身体的信号，我接受一些不舒服，内心仿佛更豁达了……","用很具体的方法，体会呼吸的深远和力度，……这样也可以减少走神的频次。"], result:"截至 2026 年 11 月，已有近 400 人加入练习。"+award, action:"扫码了解练习或讨论合作"},
 ];
@@ -866,164 +865,123 @@ const aliases={cooperation:'training','training-plan':'training',group:'meditati
 for(const source of sources)for(const node of source.nodes)node.querySelectorAll?.('a[href]').forEach(a=>{const id=a.hash.slice(1);if(aliases[id])a.hash=aliases[id];});
 // Click cues without turning the vignette into a boxed button.
 intro.querySelectorAll(':scope>.reader-links a').forEach(a=>a.textContent=a.textContent.replace(/\s*↗$/,''));
-// Render only one physical leaf; text that exceeds its capacity continues on another leaf.
+// Each approved chapter is one leaf. Long entries scroll within the leaf.
+const pages = sources.map(source => ({ ...source, key: source.id }));
 main.replaceChildren();
 const content = el("article", "", "reader-content");
 main.append(content);
 document
   .querySelectorAll(".desk-caption,.desk-bottom,.sheet>.contact-section")
   .forEach((n) => n.remove());
-let current = "cover",
-  activeRoot = "about",
-  transition = null;
+const notebook = sheet.parentElement;
+let current = null;
+let turningLeaf = null;
+let turnAnimation = null;
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-function paginate() {
-  const old = current;
-  pages.length = 0;
-  const hidden = sheet.hidden;
-  sheet.hidden = false;
-  document.body.classList.add("measuring");
-  for (const source of sources) {
-    let index = 0,
-      page = { ...source, key: source.id, nodes: [] };
-    content.replaceChildren();
-    const queue = source.nodes.map(clone);
-    while (queue.length) {
-      const node = queue.shift();
-      content.append(node);
-      const overflow = content.scrollHeight > content.clientHeight + 2;
-      if (overflow && page.nodes.length) {
-        content.removeChild(node);
-        pages.push(page);
-        index++;
-        page = { ...source, key: source.id + "~" + index, nodes: [] };
-        content.replaceChildren();
-        queue.unshift(node);
-        continue;
-      }
-      if (overflow && node.matches("p") && node.textContent.length > 70) {
-        const text = node.textContent;
-        let cut = Math.floor(text.length * 0.6);
-        const first = node.cloneNode(false),
-          rest = node.cloneNode(false);
-        first.textContent = text.slice(0, cut);
-        rest.textContent = text.slice(cut);
-        node.remove();
-        queue.unshift(first, rest);
-        continue;
-      }
-      page.nodes.push(node);
-    }
-    if (page.nodes.length) pages.push(page);
-  }
-  document.body.classList.remove("measuring");
-  sheet.hidden = hidden;
-  render(old, false);
+const wechatOnIOS = /MicroMessenger/i.test(navigator.userAgent)
+  && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+function clearPageTurn() {
+  turnAnimation?.cancel();
+  turningLeaf?.remove();
+  turningLeaf = null;
+  turnAnimation = null;
 }
+
+function snapshotLeaf(fromCover) {
+  const source = fromCover ? cover.querySelector(".cover-plate") : sheet;
+  const rect = source.getBoundingClientRect();
+  const bookRect = notebook.getBoundingClientRect();
+  const leaf = clone(source);
+  leaf.classList.add("turning-leaf", fromCover ? "turning-cover" : "outgoing-paper");
+  leaf.inert = true;
+  leaf.setAttribute("aria-hidden", "true");
+  leaf.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
+  Object.assign(leaf.style, {
+    left: rect.left - bookRect.left - notebook.clientLeft + "px",
+    top: rect.top - bookRect.top - notebook.clientTop + "px",
+    width: rect.width + "px",
+    height: rect.height + "px",
+  });
+  notebook.append(leaf);
+  if (!fromCover) leaf.querySelector(".reader-content").scrollTop = content.scrollTop;
+  return leaf;
+}
+
+function animatePageTurn(moving, backwards) {
+  const flat = wechatOnIOS
+    ? "translateX(-2%) skewY(-3deg) scaleX(.035)"
+    : "perspective(1800px) rotateY(-87deg)";
+  const folded = { transform: flat, opacity: 0, offset: backwards ? 0 : 1 };
+  const flatPage = { transform: "none", opacity: 1, offset: backwards ? 1 : 0 };
+  const middle = {
+    transform: wechatOnIOS
+      ? "translateX(-1%) skewY(-1.8deg) scaleX(.42)"
+      : "perspective(1800px) rotateY(-65deg)",
+    opacity: .96,
+    offset: backwards ? .35 : .65,
+  };
+  turnAnimation = moving.animate(backwards ? [folded, middle, flatPage] : [flatPage, middle, folded], {
+    duration: wechatOnIOS ? 430 : 520,
+    easing: "cubic-bezier(.32,.05,.3,1)",
+  });
+  turnAnimation.onfinish = clearPageTurn;
+}
+
 function render(key, animate = true) {
+  clearPageTurn();
   if (key === "cover" || !key) {
-    transition?.cancel();
-    transition = null;
-    document.querySelectorAll(".outgoing-paper").forEach((n) => n.remove());
     current = "cover";
     sheet.hidden = true;
     cover.hidden = false;
-    cover.getAnimations().forEach((a) => a.cancel());
     document.body.classList.add("cover-mode");
-    tabs.forEach((t) => {
-      t.classList.remove("active");
-      t.removeAttribute("aria-current");
+    tabs.forEach(tab => {
+      tab.classList.remove("active");
+      tab.removeAttribute("aria-current");
     });
     return;
   }
   const customDeepLink = customOptions.some(([id]) => id === key) ? key : null;
   key = customDeepLink ? "meditation" : aliases[key] || key;
-  let p = pages.find((p) => p.key === key);
-  if (!p) p = pages.find((p) => p.key === "about");
-  if (!p) return;
+  const page = pages.find(candidate => candidate.key === key) || pages[0];
+  const index = pages.indexOf(page);
+  const previous = pages.findIndex(candidate => candidate.key === current);
   const fromCover = current === "cover";
-  let outgoing;
-  if (animate && !reduced() && !fromCover && current !== p.key) {
-    const rect = sheet.getBoundingClientRect();
-    outgoing = sheet.cloneNode(true);
-    outgoing.classList.add("outgoing-paper");
-    outgoing.inert = true;
-    outgoing.setAttribute("aria-hidden", "true");
-    outgoing.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
-    Object.assign(outgoing.style, {
-      position: "fixed",
-      left: rect.left + "px",
-      top: rect.top + "px",
-      width: rect.width + "px",
-      height: rect.height + "px",
-      margin: "0",
-      transformOrigin: "left center",
-      zIndex: "30",
-    });
-    document.body.append(outgoing);
-  }
+  const shouldTurn = animate && !reduced() && (fromCover || (previous >= 0 && previous !== index));
+  const backwards = shouldTurn && previous > index;
+  if (shouldTurn) turningLeaf = snapshotLeaf(fromCover);
+
+  cover.hidden = true;
   sheet.hidden = false;
   document.body.classList.remove("cover-mode");
-  content.replaceChildren(...p.nodes.map(clone));
+  content.replaceChildren(...page.nodes.map(clone));
   content.scrollTop = 0;
-  current = p.key;
-  activeRoot = p.root;
-  tabs.forEach((t) => {
-    const active = t.dataset.page === p.root;
-    t.classList.toggle("active", active);
-    if (active) t.setAttribute("aria-current", "page");
-    else t.removeAttribute("aria-current");
+  current = page.key;
+  tabs.forEach(tab => {
+    const active = tab.dataset.page === page.root;
+    tab.classList.toggle("active", active);
+    if (active) tab.setAttribute("aria-current", "page");
+    else tab.removeAttribute("aria-current");
   });
-  const n = pages.indexOf(p);
-  document.getElementById("prev").disabled = n === 0;
-  document.getElementById("next").disabled = n === pages.length - 1;
+  document.getElementById("prev").disabled = index === 0;
+  document.getElementById("next").disabled = index === pages.length - 1;
   document.getElementById("page-number").textContent =
-    p.title + " · " + (n + 1) + " / " + pages.length;
-  document.title = p.title + "｜刘迷糊";
-  if (fromCover && animate && !reduced()) {
-    cover.classList.add("opening");
-    transition = cover.animate(
-      [
-        { transform: "perspective(1800px) rotateY(0)" },
-        { transform: "perspective(1800px) rotateY(-150deg)" },
-      ],
-      { duration: 850, easing: "ease-in-out" },
-    );
-    transition.onfinish = () => {
-      cover.hidden = true;
-      cover.classList.remove("opening");
-      transition = null;
-    };
-  } else cover.hidden = true;
-  if (outgoing) {
-    transition = outgoing.animate(
-      [
-        { transform: "perspective(2400px) rotateY(0)" },
-        { transform: "perspective(2400px) rotateY(-105deg)" },
-      ],
-      { duration: 900, easing: "ease-in-out" },
-    );
-    transition.onfinish = () => {
-      outgoing.remove();
-      transition = null;
-    };
+    page.title + " · " + (index + 1) + " / " + pages.length;
+
+  if (turningLeaf) {
+    turningLeaf.classList.toggle("backwards", backwards);
+    animatePageTurn(backwards ? sheet : turningLeaf, backwards);
   }
   bindAlbum();
   bindPosterGallery(content);
-  if (customDeepLink && animate) {
+  if (customDeepLink) {
     content.querySelector('[data-project="' + customDeepLink + '"]')?.click();
+  } else if (animate && !wechatOnIOS) {
+    content.focus({ preventScroll: true });
   }
-  content.focus({ preventScroll: true });
 }
 function route() {
-  const key = decodeURIComponent(location.hash.slice(1)) || "cover";
-  if (transition) {
-    transition.cancel();
-    document.querySelectorAll(".outgoing-paper").forEach((n) => n.remove());
-    cover.classList.remove("opening");
-    transition = null;
-  }
-  render(key);
+  render(decodeURIComponent(location.hash.slice(1)) || "cover");
 }
 document.getElementById("prev").onclick = () => {
   const i = pages.findIndex((p) => p.key === current);
@@ -1103,12 +1061,5 @@ function bindAlbum() {
 }
 content.tabIndex = -1;
 window.addEventListener("hashchange", route);
-let resize;
-window.addEventListener("resize", () => {
-  clearTimeout(resize);
-  resize = setTimeout(paginate, 180);
-});
-document.fonts.ready.then(() => {
-  paginate();
-  route();
-});
+render(decodeURIComponent(location.hash.slice(1)) || "cover", false);
+document.documentElement.classList.remove("opening-inner-page");

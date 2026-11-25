@@ -5828,3 +5828,20 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
   }
 }
 .qr-dialog .qr-crop { box-shadow:0 0 0 5px #fff; }
+
+/* Turning layers share the book's coordinate system, including in embedded iOS browsers. */
+#book-cover[hidden], .notebook > .sheet[hidden] { display:none !important; }
+.notebook > .turning-leaf {
+  position:absolute;
+  z-index:6;
+  margin:0;
+  min-height:0;
+  max-height:none;
+  pointer-events:none;
+  transform-origin:left center;
+  backface-visibility:hidden;
+}
+.notebook > .turning-leaf.backwards { z-index:0; }
+.notebook > .sheet:not(.turning-leaf) { position:relative; z-index:1; }
+.turning-cover img { display:block; width:100%; height:100%; }
+.opening-inner-page body.cover-mode #book-cover { visibility:hidden; }
