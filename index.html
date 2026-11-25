@@ -8,8 +8,15 @@
       name="description"
       content="刘迷糊的个人手帐：正念冥想研究、团体冥想、一对一定制练习，以及日常的觉察与记录。"
     />
-    <title>刘迷糊｜冥想与生活手帐</title>
-    <link rel="stylesheet" href="style.css?v=1.5.0" />
+    <title>刘迷糊</title>
+    <script>
+      if (location.hash && location.hash !== "#cover") {
+        document.documentElement.classList.add("opening-inner-page");
+      }
+    </script>
+    <meta property="og:title" content="刘迷糊" />
+    <meta name="twitter:title" content="刘迷糊" />
+    <link rel="stylesheet" href="style.css?v=1.5.0-r2" />
   </head>
   <body class="cover-mode">
     <a class="skip" href="#page">跳到正文</a>
@@ -128,7 +135,7 @@
                     </div>
                     <div class="milestone">
                       <span class="eyebrow">原创设计与实施</span>
-                      <h3>21天正念情绪调节（MERP）</h3>
+                      <h3>正念情绪调节（MERP）</h3>
                       <p>
                         独立原创设计并实施，截至2026年11月，近400人加入练习；获2026年浙江大学心理系应用心理大赛三等奖。
                       </p>
@@ -628,7 +635,7 @@
                 <h2>现成可以合作的事</h2>
                 <p>
                   <b>已有项目合作</b> ——
-                  我已独立原创设计并实施4周正念亲子团体辅导、21天正念情绪调节（MERP），可以围绕这些项目交流合作，结合机构的具体需要讨论开展方式。
+                  我已独立原创设计并实施4周正念亲子团体辅导、正念情绪调节（MERP），可以围绕这些项目交流合作，结合机构的具体需要讨论开展方式。
                 </p>
                 <p>
                   <b>定制团体与活动</b> ——
@@ -697,6 +704,6 @@
         <p>添加微信时，可以告诉我：你想了解什么</p>
       </div>
     </dialog>
-    <script src="app.js?v=1.5.0"></script>
+    <script src="app.js?v=1.5.0-r2"></script>
   </body>
 </html>
