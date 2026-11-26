@@ -317,7 +317,7 @@ function makePosterGallery(label, filePrefix, descriptions) {
     if (filePrefix) {
       poster.src = "assets/" + filePrefix + "-" + (index + 1) + ".png";
       if (filePrefix === "online-meditation") {
-        poster.src += "?v=1.5.0";
+        poster.src += "?v=group-posters-4";
       }
       poster.alt = description;
       poster.draggable = false;
