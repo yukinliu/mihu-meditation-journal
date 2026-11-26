@@ -487,7 +487,7 @@ collaboration.append(collaborationIntro);
 const collaborationCards = el("div", "", "collaboration-cards");
 for (const [key, title, summary, imageFile] of [
   ["merp", "正念情绪调节", "每天 15 分钟，以持续练习支持情绪觉察与调节", "project-vignette-merp.png"],
-  ["family", "4 周正念养育团辅", "从家长的情绪觉察入手，探索把练习带回日常亲子相处", "project-vignette-family.png"],
+  ["family", "正念养育团辅", "从家长的情绪觉察入手，探索把练习带回日常亲子相处", "project-vignette-family.png"],
   ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的冥想与心理主题活动", "collaboration-group.png"],
   ["jianji-collaboration", "见己记录软件", "一款懂你的电脑端记录工具，把感受、想法与经历留下来，在 AI 时代释放积累的价值", "collaboration-jianji.png"],
 ]) {
@@ -512,7 +512,7 @@ const trainingArt = el("img", "", "training-art");
 trainingArt.src = "assets/training-books.png";
 trainingArt.alt = "";
 trainingCopy.append(el("h2", "冥想带领者培训方案"), el("span", "进行中", "status"),
-  el("p", "正在把实际带领中反复遇到的问题，整理成体系化的课程：从冥想基础知识、方案设计、有效引导，到常见问题处理，以及带领能力的递进与评估。"), el("p", "如果你对带领者培训感兴趣，欢迎联系我交流。"));
+  el("p", "从真实带练中的问题出发，练习设计、引导和临场调整。"), el("p", "冥想基础 · 方案设计 · 引导与答疑 · 能力评估", "journal-emphasis"));
 trainingPlan.append(trainingCopy, trainingArt);
 const collaborationContact = el("button", "感兴趣？欢迎沟通合作", "meditation-contact collaboration-contact");
 collaborationContact.type = "button";
@@ -634,8 +634,8 @@ const projectSpecs = [
     "初学者完成 4 周练习，并在 3 个月后接受追踪；研究同时关注练习体验、脑电记录与日常正念倾向的变化。",
     "研究结果也让我继续思考：什么样的练习，能让冥想中的体验不只停留在当下，而更可能转化为日常生活里更持久的变化？",
   ], links:[["阅读文章","https://doi.org/10.1016/j.chbr.2026.101376"]]},
-  {key:"family", label:"4 周正念养育团体", title:"从家长的觉察，走向亲子互动", paragraphs:[
-    "这是一套为家长设计的 4 周正念养育团体方案，由我独立设计。",
+  {key:"family", label:"正念养育团辅", title:"从家长的觉察，走向亲子互动", paragraphs:[
+    "这套为期 4 周的正念养育团辅方案，由我独立设计。",
     "通过正念冥想与团体交流，练习觉察自己的情绪与反应，探索怎样把觉察与调节带入亲子互动。",
   ], feedback:["我觉得我在慢慢学会接纳生活中的一些‘错误’和‘意外’","虽然有焦急，……而是耐心等待他完成，最终当他走出书房时，我很欣喜"], result:award, action:"扫码了解项目合作"},
   {key:"merp", label:"正念情绪调节", title:"每天 15 分钟，留意情绪，也练习如何回应。", paragraphs:[
@@ -656,19 +656,19 @@ customGroupArt.alt = "";
 const customGroupCopy = el("div", "", "project-detail-copy");
 const collaborationSteps = el("ol", "", "collaboration-detail-list");
 for (const [title, description] of [
-  ["需求梳理", "一起沟通参与者的基本情况、期望解决的核心诉求（如缓解焦虑、改善沟通）以及现场条件。"],
-  ["方案定制", "结合心理学与正念冥想、主题交流和互动答疑，设计出有节奏的活动环节。"],
-  ["现场带领", "留出足够的体验和提问时间，让大家不仅“听懂”，也能“体验到”。"],
-  ["长期项目落地", "如果是周期性的长期项目，我们可以通过阶段性的练习与复盘，帮助参与者将觉察内化，切实改善情绪状态，提升团队的心理韧性与协作效能。"],
+  ["需求梳理", "先明确参与者、活动目标与现场条件。"],
+  ["方案定制", "按需要安排正念练习、主题交流与答疑。"],
+  ["现场带领", "现场引导练习，留出体验与提问时间。"],
+  ["阶段复盘", "多次活动可结合反馈，调整下一阶段的练习。"],
 ]) {
   const item = el("li");
   item.append(el("strong", title + "：", "journal-emphasis"), description);
   collaborationSteps.append(item);
 }
 customGroupCopy.append(el("h2", "定制团体活动：从真实需求出发"),
-  el("p", "无论是企业团队的减压放松、提升专注，还是特定机构的专题活动，一次有效的冥想体验，需要贴合参与者当下的状态。"),
+  el("p", "为团队或机构定制冥想与心理主题活动，可安排单场体验或阶段性练习。"),
   el("h3", "我们可以这样合作"), collaborationSteps,
-  el("p", "如果你有初步的想法或具体的场景，欢迎随时与我联系。"), projectContact("沟通活动需求"));
+  projectContact("沟通活动需求"));
 customGroupNote.append(customGroupArt, customGroupCopy);
 projectContent["custom-group"] = customGroupNote;
 const jianjiCollaboration = el("section", "", "project-entry illustrated-detail");
