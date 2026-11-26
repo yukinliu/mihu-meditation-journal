@@ -4028,7 +4028,6 @@ footer button {
 }
 .collaboration-card:nth-child(2n) { background-color:#e7ead5; }
 .collaboration-card:is(:hover,:focus-visible) { background-color:#efdbb5; }
-.collaboration-card > span { font-size:.88em; line-height:1.45; }
 .collaboration-arrow { position:absolute; top:10px; right:11px; }
 .training-plan { padding:10px 12px; background:#f5ead4a0; border-left:2px solid #a38c67; }
 .reader-content .training-plan h2 { display:inline; margin-right:10px; }
@@ -4638,7 +4637,6 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
   filter:saturate(.82);
 }
 .training-sheet .collaboration-copy { display:grid; gap:3px; padding:0 19px 0 5px; }
-.collaboration-copy strong { font-size:1.08em; }
 .training-sheet .collaboration-arrow { top:auto; bottom:10px; right:8px; }
 .training-sheet .training-plan {
   display:grid;
@@ -4661,15 +4659,10 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
   .sheet > header .header-actions { gap:5px; }
   .wechat-bubbles { transform:scale(.82); }
   .training-sheet .collaboration-copy { padding:0 11px 0 1px; }
-  .training-sheet .collaboration-arrow { right:4px; bottom:7px; font-size:10px; }
+  .training-sheet .collaboration-arrow { right:4px; bottom:7px; }
   .training-sheet .collaboration-card { padding:4px; }
-  .training-sheet .collaboration-copy strong { font-size:clamp(11px,2.7vw,14px); }
-  .training-sheet .collaboration-copy > span { font-size:clamp(10px,2.5vw,12px); line-height:1.42; }
   .collaboration-art { height:clamp(42px,8.7dvh,82px); }
   .training-sheet .training-plan { grid-template-columns:minmax(0,1.8fr) minmax(0,1fr); padding:6px; }
-  .training-sheet .training-plan h2 { font-size:clamp(13px,3.5vw,17px); }
-  .training-sheet .training-plan p { font-size:11px; }
-  .training-plan .status { font-size:10px; }
 }
 
 .jianji-poster-frame.can-enlarge .jianji-poster-card[data-depth="0"] img { cursor:zoom-in; }
@@ -4988,8 +4981,6 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
   .notebook > .sheet { padding-left:clamp(12px,4vw,20px); padding-right:clamp(38px,11.5vw,49px); gap:8px; }
   .notebook > .sheet > header { align-items:center; gap:5px; padding-bottom:5px; }
   .sheet > header .header-actions { gap:6px; }
-  .sheet > header .close-notebook { font-size:10px; }
-  .sheet > header button.contact-link { font-size:10px !important; }
   .sheet > header .brand { font-size:clamp(13px,4vw,18px); }
   .sheet > header .brand span { font-size:clamp(8px,2.4vw,10px); }
   .reader-content .meditation-header h1 { white-space:nowrap; }
@@ -5433,7 +5424,7 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
 }
 .service-poster-detail .jianji-poster-frame { overflow:clip; }
 .sheet .reader-content :is(.intro-identity,.memory-intro,.practice-copy,.pause-heading,.restart-sheet,.meditation-sheet) h1 {
-  font-size:clamp(16px,2.65dvh,24px);
+  font-size:var(--reading-title-size);
 }
 .reader-content .stranded-sheet .pause-diary p {
   font-size:clamp(12px,3.1vw,15px);
@@ -5544,7 +5535,7 @@ dialog:is(.qr-dialog,.project-dialog) .qr-crop { border-radius:12px; overflow:hi
 .sheet .reader-content {
   --journal-body-size:clamp(12px,1.85dvh,16px);
   --journal-card-size:clamp(12px,1.65dvh,14px);
-  --journal-heading-size:clamp(16px,2.65dvh,24px);
+  --journal-heading-size:var(--reading-title-size);
   font-family:var(--serif);
 }
 .sheet .reader-content h1 { font-size:var(--journal-heading-size); text-wrap:balance; }
@@ -5552,15 +5543,6 @@ dialog:is(.qr-dialog,.project-dialog) .qr-crop { border-radius:12px; overflow:hi
   font-size:var(--journal-body-size);
   line-height:1.6;
 }
-.sheet .reader-content .training-sheet .collaboration-copy > span {
-  font-size:var(--journal-card-size);
-  line-height:1.48;
-}
-.sheet .reader-content .training-sheet .collaboration-copy > strong {
-  font-size:clamp(13px,1.85dvh,16px);
-  line-height:1.4;
-}
-.sheet .training-sheet .training-plan h2 { font-size:clamp(15px,2.2dvh,19px); }
 .sheet .training-sheet .training-plan p { margin-top:5px; }
 #book-cover .cover-plate img {
   max-width:none;
@@ -5828,13 +5810,23 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
 .turning-cover img { display:block; width:100%; height:100%; }
 .opening-inner-page body.cover-mode #book-cover { visibility:hidden; }
 
-/* The same reading scale applies to the journal and its detail sheets. */
+/* Four reading levels, measured against the usable paper width. */
 :root {
-  --reading-size:clamp(13px,calc(12px + .38vw),16px);
-  --support-size:clamp(11px,calc(10px + .4vw),14px);
-  --section-size:clamp(15px,calc(13px + .5vw),19px);
-  --detail-title-size:clamp(18px,calc(16px + .65vw),24px);
+  --reading-title-size:19px;
+  --reading-size:13px;
+  --support-size:11.5px;
+  --caption-size:10px;
   --reading-leading:1.6;
+}
+@supports (font-size:1cqi) {
+  .reader-content, .project-body, .meditation-services,
+  .sheet > header, .sheet > footer, .qr-dialog, .jianji-feature-dialog, .poster-viewer {
+    container-type:inline-size;
+    --reading-title-size:clamp(18px,4.15cqi,22px);
+    --reading-size:clamp(13px,3.2cqi,15px);
+    --support-size:clamp(11.5px,2.7cqi,13px);
+    --caption-size:clamp(10px,2.25cqi,11.5px);
+  }
 }
 .sheet .reader-content,
 .project-dialog .project-body,
@@ -5852,11 +5844,11 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
 }
 .sheet .reader-content :is(.memory-note,.practice-copy,.restart-part,.design-principle,.design-questions,.training-plan) h2,
 .project-dialog .project-detail-copy h3 {
-  font-size:var(--section-size);
+  font-size:var(--reading-size);
   line-height:1.4;
 }
 .project-dialog .project-detail-copy h2 {
-  font-size:var(--detail-title-size);
+  font-size:var(--reading-title-size);
   line-height:1.43;
   text-wrap:balance;
 }
@@ -5869,12 +5861,29 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
   font-size:var(--support-size);
   line-height:1.5;
 }
+/* Card titles carry the reading size. Their supporting copy shares the SLOW scale. */
+.sheet .reader-content .memory-note > p,
 .sheet .reader-content .meditation-services .custom-card-copy > span:not(.meditation-card-action) {
-  font-size:var(--reading-size);
-  line-height:1.52;
+  font-size:var(--support-size);
+  line-height:1.55;
 }
-.sheet .reader-content .training-sheet .collaboration-copy > span { font-size:var(--reading-size); }
-.sheet .reader-content .training-sheet .collaboration-copy > strong { font-size:var(--section-size); }
+.sheet .reader-content .meditation-services .custom-card-copy > strong,
+.sheet .reader-content .practice-album-title {
+  font-size:var(--reading-size);
+}
+/* The collaboration leaf uses the journal scale for every text role. */
+.sheet .reader-content .training-sheet :is(.collaboration-copy > strong,.training-plan h2,.collaboration-contact) {
+  font-size:var(--reading-size);
+  line-height:1.4;
+}
+.sheet .reader-content .training-sheet :is(.collaboration-copy > span,.training-plan p.journal-emphasis) {
+  font-size:var(--support-size);
+  line-height:1.55;
+}
+.sheet .reader-content .training-sheet :is(.collaboration-arrow,.training-plan .status) {
+  font-size:var(--caption-size);
+  line-height:1.35;
+}
 .sheet .reader-content :is(.meditation-practice-footer,.meditation-practice-footer p,.design-subtitle) {
   font-size:var(--support-size);
 }
@@ -5908,13 +5917,14 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
   gap:1px;
   line-height:1.28;
 }
-.home-slow-values small { font-size:clamp(10px,1.5dvh,13px); white-space:nowrap; }
+.home-slow-values small { font-size:var(--caption-size); white-space:nowrap; }
+.sheet .reader-content .home-journey-caption { font-size:var(--caption-size); }
+.home-journey-caption b { font-size:inherit; }
 .home-slow-icon { width:clamp(21px,3.3dvh,34px); }
 @media(max-width:540px) {
   .sheet .reader-content .intro-sheet { grid-template-rows:auto minmax(212px,1fr) auto; }
   .sheet .reader-content .home-figure { height:clamp(50px,10dvh,85px); }
   .sheet .reader-content .intro-top .portrait img { height:clamp(74px,14dvh,100px); }
-  .sheet .reader-content .training-sheet .collaboration-copy > strong { font-size:clamp(12px,3.6vw,15px); }
 }
 @media(min-width:541px) and (max-height:850px) {
   .sheet .reader-content .intro-sheet { grid-template-rows:auto minmax(224px,1fr) auto; }
@@ -5981,4 +5991,42 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
   outline:2px solid #796349;
   outline-offset:2px;
   border-radius:9px;
+}
+
+/* Secondary controls and captions stay on the same scale as the reading content. */
+.sheet > header :is(.close-notebook,.contact-link) {
+  font-size:var(--support-size);
+  line-height:1.4;
+}
+.sheet > header .journal-brand .journal-motto,
+.sheet > footer #page-number,
+.sheet .reader-content :is(.restart-projects .project-slip small,.practice-sheet .practice-album-controls .album-count),
+.project-dialog .project-body .registration-note,
+:is(.sheet .reader-content,.project-dialog,.jianji-feature-dialog) .jianji-poster-controls [aria-live],
+.poster-viewer .poster-viewer-tools [aria-live] {
+  font-size:var(--caption-size);
+  line-height:1.4;
+  font-variant-numeric:tabular-nums;
+}
+.sheet .reader-content .restart-projects .project-slip > span {
+  font-size:var(--reading-size);
+  line-height:1.4;
+}
+.sheet .reader-content .memory-leaf .memory-preface,
+.sheet .reader-content .practice-sheet .practice-copy p.practice-aside {
+  font-size:var(--support-size);
+  line-height:var(--reading-leading);
+}
+.sheet .reader-content .meditation-services .custom-card-copy .meditation-card-action,
+.sheet .reader-content .design-questions .meditation-contact,
+.project-dialog .project-body :is(.meditation-contact,.project-dismiss),
+:is(.sheet .reader-content,.project-dialog,.jianji-feature-dialog) .jianji-poster-controls button,
+.poster-viewer .poster-viewer-tools :is(button,a) {
+  font-family:var(--serif);
+  font-size:var(--support-size);
+  line-height:1.4;
+}
+.jianji-feature-header h2 {
+  font-size:var(--reading-title-size);
+  line-height:1.43;
 }
