@@ -6030,3 +6030,21 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
   font-size:var(--reading-title-size);
   line-height:1.43;
 }
+
+.sheet .reader-content .restart-part .restart-memories {
+  margin-block:8px 0;
+}
+.sheet .reader-content .restart-memories li + li {
+  margin-top:.65em;
+}
+.restart-memories li::marker { color:#986342; }
+.restart-highlight {
+  color:#78432e;
+  background:linear-gradient(transparent 52%,#eacb986e 52% 94%,transparent 94%);
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+.sheet .reader-content .restart-memories small {
+  color:#75675a;
+  font-size:var(--support-size);
+}

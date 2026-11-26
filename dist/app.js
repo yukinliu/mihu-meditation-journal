@@ -489,7 +489,7 @@ for (const [key, title, summary, imageFile] of [
   ["merp", "正念情绪调节", "每天 15 分钟，以持续练习支持情绪觉察与调节", "project-vignette-merp.png"],
   ["family", "正念养育团辅", "从家长的情绪觉察入手，探索把练习带回日常亲子相处", "project-vignette-family.png"],
   ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的冥想与心理主题活动", "collaboration-group.png"],
-  ["jianji-collaboration", "见己记录软件", "一款懂你的电脑端记录工具，把感受、想法与经历留下来，在 AI 时代释放积累的价值", "collaboration-jianji.png"],
+  ["jianji-collaboration", "见己记录软件", "一款保护你隐私的日常记录软件，让轻量碎片记录在AI时代释放更大价值。", "collaboration-jianji.png"],
 ]) {
   const card = el("button", "", "collaboration-card");
   card.type = "button";
@@ -615,12 +615,18 @@ for (const [title, ...paragraphs] of [
     el("p", text, text.endsWith("？") ? "journal-question" : "")));
   restartDiary.append(part);
 }
-const restartMemories = el("ul");
-for (const text of [
-  "某天深夜，从图书馆回家的路上，初步决定重拾冥想时，莫名感动落泪；",
-  "梦里选了冥想方向，一位师兄带我一起做研究（后来事实果真如此，只是梦里的师兄做的是冥想在企业场景中的应用）；",
-  "见完导师、选定方向后，一切似乎都没变，但“心”里的一切都顺畅了。",
-]) restartMemories.append(el("li", text));
+const restartMemories = el("ul", "", "restart-memories");
+const memoryHighlight = text => el("mark", text, "restart-highlight");
+const firstMemory = el("li");
+firstMemory.append("某天深夜，从图书馆回家的路上，初步决定",
+  memoryHighlight("重拾冥想"), "时，莫名", memoryHighlight("感动落泪"), "；");
+const secondMemory = el("li");
+secondMemory.append(memoryHighlight("梦里选了冥想方向"), "，一位师兄带我一起做研究",
+  el("small", "（后来事实果真如此，只是梦里的师兄做的是冥想在企业场景中的应用）"), "；");
+const thirdMemory = el("li");
+thirdMemory.append("见完导师、选定方向后，一切似乎都没变，但“",
+  memoryHighlight("心"), "”里的一切都", memoryHighlight("顺畅"), "了。");
+restartMemories.append(firstMemory, secondMemory, thirdMemory);
 restartDiary.firstElementChild.append(restartMemories);
 const projectStrip = el("div", "", "project-strip illustrated-projects");
 projectStrip.setAttribute("aria-label", "研究项目");
