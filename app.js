@@ -119,7 +119,9 @@ for (const [chinese, english, crop] of [
   ["丰盛幸福", "Well-being", [1148, 794, 90, 77]],
 ]) {
   const value = el("li");
-  value.append(artworkCrop(...crop, "home-art-crop home-slow-icon"), el("span", chinese), el("small", english));
+  const translation = el("small", english);
+  translation.lang = "en";
+  value.append(artworkCrop(...crop, "home-art-crop home-slow-icon"), el("span", chinese), translation);
   values.append(value);
 }
 slow.append(values);
@@ -228,9 +230,7 @@ groupCard.append(groupArtwork, groupCopy);
 customCards.append(groupCard);
 const designLink = el("a", "了解练习设计理念", "meditation-method-link");
 designLink.href = "#meditation-design";
-const pageArrow = el("span", "›");
-pageArrow.setAttribute("aria-hidden", "true");
-designLink.append(pageArrow);
+
 meditationHeader.append(designLink);
 const meditationFooter = el("footer", "", "meditation-practice-footer");
 meditationFooter.append(el("p", "每一次练习，都是回到自己的过程。"),
@@ -557,7 +557,7 @@ practiceAlbum.setAttribute("aria-label", "带领与进修时刻");
 practiceText.append(
   el("h2", "教学相长", "practice-subhead"),
   el("p", "从 2015 年起，我开始规律练习，也带领线下冥想。"),
-  el("p", "怎样把引导说清楚？遇到走神、昏沉或身体不适时，怎样调整？面对不同的人，同一种方法又会带来怎样的体验？"),
+  el("p", "怎样把引导说清楚？遇到走神、昏沉或身体不适时，怎样调整？面对不同的人，同一种方法又会带来怎样的体验？", "journal-question"),
   el("p", "这些问题，陪着我在学习、练习与带领之间不断往返。"),
   el("p", "那八年里，我没有统计过带领的人数与时长，但那些相遇与实践，慢慢沉淀为后来生活、研究与方案设计的养分。", "practice-aside"),
   el("h2", "正念，进入生活", "practice-subhead"),
@@ -594,7 +594,9 @@ const pauseTitle = el("div", "", "pause-heading");
 pauseTitle.append(el("h1", "重新思考方向"));
 const pauseTop = el("div", "", "pause-top");
 pauseTop.append(pauseTitle, pauseArt);
-const pauseDiary=el('div','','pause-diary journal-writing');pauseDiary.append(...pauseCopy.map(t=>el('p',t)));const pauseStillLife = el("img", "", "pause-still-life");
+const pauseDiary = el("div", "", "pause-diary journal-writing");
+pauseDiary.append(...pauseCopy.map((text, index) => el("p", text, index === pauseCopy.length - 1 ? "journal-takeaway" : "")));
+const pauseStillLife = el("img", "", "pause-still-life");
 pauseStillLife.src = "assets/pause-desk-vignette.png";
 pauseStillLife.alt = "";
 pauseDiary.append(pauseStillLife);
@@ -609,7 +611,8 @@ for (const [title, ...paragraphs] of [
   ["把理解，带回实践", "我希望让每一种练习的预期更清晰，让引导与安排更贴近参与者的需要，也更坦诚地说明它能做什么，以及还有哪些问题值得继续探究。"],
 ]) {
   const part = el("section", "", "restart-part");
-  part.append(el("h2", title), ...paragraphs.map(text => el("p", text)));
+  part.append(el("h2", title), ...paragraphs.map(text =>
+    el("p", text, text.endsWith("？") ? "journal-question" : "")));
   restartDiary.append(part);
 }
 const restartMemories = el("ul");

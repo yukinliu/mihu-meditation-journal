@@ -5325,18 +5325,6 @@ body:not(.cover-mode) .tabs a:focus-visible { outline:2px solid #684024; outline
   gap:4px;
 }
 .reader-content .meditation-header p { color:#675139; }
-.meditation-method-link {
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  min-height:34px;
-  color:#794928;
-  text-decoration:underline;
-  text-decoration-color:#9d6c49;
-  text-underline-offset:4px;
-  font-size:clamp(12px,1.75dvh,16px);
-}
-.meditation-method-link:is(:hover,:focus-visible) { color:#492a1b; text-decoration-thickness:2px; }
 .meditation-method-link:active { transform:translateY(1px); }
 .meditation-services {
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -5635,8 +5623,7 @@ dialog:is(.qr-dialog,.project-dialog) .qr-crop { border-radius:12px; overflow:hi
 :is(.sheet > header button.contact-link,.sheet .meditation-contact,.service-poster-detail .practice-consultation):is(:hover,:focus-visible) {
   background:none;
   box-shadow:none;
-  text-decoration:underline;
-  text-underline-offset:3px;
+  filter:brightness(.96);
 }
 :is(.sheet > header button.contact-link,.sheet .meditation-contact,.service-poster-detail .practice-consultation):is(:hover,:focus-visible)::before,
 .meditation-services .custom-card:is(:hover,:focus-visible) .meditation-card-action::before {
@@ -5644,7 +5631,6 @@ dialog:is(.qr-dialog,.project-dialog) .qr-crop { border-radius:12px; overflow:hi
 }
 .sheet > header button.contact-link:focus-visible {
   outline:none;
-  text-decoration-thickness:2px;
 }
 .sheet .meditation-services .custom-card:is(:hover,:focus-visible) .meditation-card-action,
 .sheet .meditation-services .meditation-group-card .meditation-card-action {
@@ -5759,11 +5745,7 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
   color:var(--journal-accent);
   font:inherit;
   cursor:pointer;
-  text-decoration:underline;
-  text-underline-offset:4px;
-  text-decoration-color:#a66e4a8c;
 }
-.jianji-feature-button:is(:hover,:focus-visible) { text-decoration-color:currentColor; }
 .jianji-feature-dialog {
   box-sizing:border-box;
   width:min(620px,calc(100% - 24px));
@@ -5845,3 +5827,158 @@ body:not(.cover-mode) .tabs a:hover::before { filter:saturate(1.15) brightness(.
 .notebook > .sheet:not(.turning-leaf) { position:relative; z-index:1; }
 .turning-cover img { display:block; width:100%; height:100%; }
 .opening-inner-page body.cover-mode #book-cover { visibility:hidden; }
+
+/* The same reading scale applies to the journal and its detail sheets. */
+:root {
+  --reading-size:clamp(13px,calc(12px + .38vw),16px);
+  --support-size:clamp(11px,calc(10px + .4vw),14px);
+  --section-size:clamp(15px,calc(13px + .5vw),19px);
+  --detail-title-size:clamp(18px,calc(16px + .65vw),24px);
+  --reading-leading:1.6;
+}
+.sheet .reader-content,
+.project-dialog .project-body,
+.qr-dialog .qr-caption {
+  --journal-body-size:var(--reading-size);
+  --journal-card-size:var(--support-size);
+}
+.sheet .reader-content :is(.intro-identity,.memory-leaf,.practice-copy,.pause-diary,
+    .restart-part,.design-principle,.design-questions,.jianji-sheet,.collaboration-section,.training-plan) p,
+.sheet .reader-content .restart-part ul,
+.project-dialog .project-body :is(.project-detail-copy p,.collaboration-detail-list),
+.qr-dialog .qr-caption p {
+  font-size:var(--reading-size);
+  line-height:var(--reading-leading);
+}
+.sheet .reader-content :is(.memory-note,.practice-copy,.restart-part,.design-principle,.design-questions,.training-plan) h2,
+.project-dialog .project-detail-copy h3 {
+  font-size:var(--section-size);
+  line-height:1.4;
+}
+.project-dialog .project-detail-copy h2 {
+  font-size:var(--detail-title-size);
+  line-height:1.43;
+  text-wrap:balance;
+}
+.project-dialog .project-detail-copy p { margin-bottom:.68em; }
+.project-dialog .project-detail-copy .solo-practice-method p { margin-bottom:0; }
+.project-dialog .project-body .practice-feedback blockquote,
+.project-dialog .project-body .project-kicker,
+.project-dialog .project-body .project-contact,
+.qr-dialog .qr-caption p + p {
+  font-size:var(--support-size);
+  line-height:1.5;
+}
+.sheet .reader-content .meditation-services .custom-card-copy > span:not(.meditation-card-action) {
+  font-size:var(--reading-size);
+  line-height:1.52;
+}
+.sheet .reader-content .training-sheet .collaboration-copy > span { font-size:var(--reading-size); }
+.sheet .reader-content .training-sheet .collaboration-copy > strong { font-size:var(--section-size); }
+.sheet .reader-content :is(.meditation-practice-footer,.meditation-practice-footer p,.design-subtitle) {
+  font-size:var(--support-size);
+}
+
+.sheet .reader-content .journal-question,
+.sheet .reader-content .journal-takeaway {
+  padding:.35em .7em;
+  border-inline-start:2px solid #bd875e8c;
+  background:linear-gradient(100deg,#ead1ae64,transparent 90%);
+  color:var(--journal-accent);
+}
+.sheet .reader-content .practice-copy .practice-takeaway {
+  font-size:var(--reading-size);
+  line-height:var(--reading-leading);
+}
+.project-dialog .project-detail-highlight { color:#704128; }
+.project-dialog .collaboration-detail-list li + li { margin-top:.38em; }
+
+/* Reserve space for the bilingual legend at the bottom of the first leaf. */
+.sheet .reader-content .intro-sheet {
+  grid-template-rows:auto minmax(clamp(216px,37dvh,328px),1fr) auto;
+  gap:clamp(6px,1.1dvh,11px);
+  padding-bottom:4px;
+}
+.sheet .reader-content .home-journey { margin-top:0; }
+.sheet .reader-content .home-slow { margin-top:0; translate:none; }
+.home-slow-title { gap:10px; font-size:clamp(15px,2.05dvh,22px); line-height:1.05; }
+.home-slow-values { padding:3px 0 2px; font-size:var(--support-size); }
+.home-slow-values li {
+  grid-template-rows:clamp(17px,2.65dvh,25px) auto auto;
+  gap:1px;
+  line-height:1.28;
+}
+.home-slow-values small { font-size:clamp(10px,1.5dvh,13px); white-space:nowrap; }
+.home-slow-icon { width:clamp(21px,3.3dvh,34px); }
+@media(max-width:540px) {
+  .sheet .reader-content .intro-sheet { grid-template-rows:auto minmax(212px,1fr) auto; }
+  .sheet .reader-content .home-figure { height:clamp(50px,10dvh,85px); }
+  .sheet .reader-content .intro-top .portrait img { height:clamp(74px,14dvh,100px); }
+  .sheet .reader-content .training-sheet .collaboration-copy > strong { font-size:clamp(12px,3.6vw,15px); }
+}
+@media(min-width:541px) and (max-height:850px) {
+  .sheet .reader-content .intro-sheet { grid-template-rows:auto minmax(224px,1fr) auto; }
+  .sheet .reader-content .intro-top .portrait img { height:clamp(95px,17dvh,136px); }
+  .sheet .reader-content .home-figure { height:clamp(62px,11dvh,94px); }
+}
+@media(max-width:380px) and (max-height:650px) {
+  .sheet .reader-content .intro-sheet { grid-template-rows:auto minmax(158px,1fr) auto; gap:4px; }
+  .sheet .reader-content .intro-top { grid-template-columns:minmax(0,3.2fr) minmax(0,1fr); align-items:center; gap:3px 6px; }
+  .sheet .reader-content .intro-identity { display:contents; }
+  .sheet .reader-content .intro-identity h1 { grid-area:1 / 1; align-self:end; margin-bottom:0; }
+  .sheet .reader-content .intro-credentials { grid-area:2 / 1; margin-bottom:0; }
+  .sheet .reader-content .intro-top .portrait { grid-area:1 / 2 / 3 / 3; }
+  .sheet .reader-content .intro-focus { grid-area:3 / 1 / 4 / 3; margin:1px 0 0; }
+  .sheet .reader-content .home-journey-link[data-stop="pause"] { width:42%; }
+  .sheet .reader-content .home-figure { height:46px; }
+}
+
+/* Painted action labels keep the click cue without drawing a rule below the text. */
+:is(.sheet .reader-content,.project-dialog,.jianji-feature-dialog)
+  :is(.text-link,.meditation-method-link,.jianji-feature-button) {
+  display:inline-flex;
+  align-items:center;
+  gap:.42em;
+  min-height:34px;
+  padding:3px .65em;
+  border:0;
+  background:linear-gradient(110deg,#e7cba675,#efe0c665 84%,#e7cba645);
+  border-radius:45% 31% 38% 24% / 20% 29% 23% 34%;
+  color:#75442d;
+  font-size:var(--reading-size);
+  line-height:1.4;
+  text-decoration:none;
+  cursor:pointer;
+  text-align:left;
+}
+:is(.sheet .reader-content,.project-dialog,.jianji-feature-dialog)
+  :is(.text-link,.meditation-method-link,.jianji-feature-button)::after {
+  position:static;
+  width:.36em;
+  height:.36em;
+  margin-inline-end:.15em;
+  flex:none;
+  content:"";
+  background:none;
+  border-block-start:1px solid currentColor;
+  border-inline-end:1px solid currentColor;
+  transform:rotate(45deg);
+  opacity:.85;
+}
+.jianji-feature-header .jianji-feature-button::after { order:-1; transform:rotate(-135deg); }
+:is(.sheet .reader-content,.project-dialog,.jianji-feature-dialog)
+  :is(.text-link,.meditation-method-link,.jianji-feature-button):is(:hover,:focus-visible) {
+  background-color:#d6ab7947;
+  color:#613622;
+  text-decoration:none;
+}
+.sheet > header :is(.close-notebook,.contact-link):is(:hover,:focus-visible),
+.sheet .meditation-contact:is(:hover,:focus-visible),
+.service-poster-detail .practice-consultation:is(:hover,:focus-visible) {
+  text-decoration:none;
+}
+.sheet > header :is(.close-notebook,.contact-link):focus-visible {
+  outline:2px solid #796349;
+  outline-offset:2px;
+  border-radius:9px;
+}
