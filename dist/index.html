@@ -16,7 +16,8 @@
     </script>
     <meta property="og:title" content="刘迷糊" />
     <meta name="twitter:title" content="刘迷糊" />
-    <link rel="stylesheet" href="style.css?v=2.0.0-journal-12" />
+    <link rel="stylesheet" href="style.css?v=2.0.0-journal-15" />
+    <link rel="stylesheet" href="audio-player.css?v=2.0.0-journal-14" />
   </head>
   <body class="cover-mode">
     <a class="skip" href="#page">跳到正文</a>
@@ -663,7 +664,20 @@
         <p>添加微信时，可以告诉我：你想了解什么</p>
       </div>
     </dialog>
+    <button type="button" class="audio-launch" hidden aria-haspopup="dialog" aria-controls="journal-audio-dialog" aria-label="打开冥想音频">
+      <span class="audio-headphones" aria-hidden="true"></span>
+    </button>
+    <dialog id="journal-audio-dialog" class="audio-sheet" aria-labelledby="journal-audio-title">
+      <button type="button" class="audio-grip" aria-label="收起冥想音频"></button>
+      <div class="audio-sheet-scroll">
+        <h2 id="journal-audio-title"><span aria-hidden="true">🎧</span> 给自己几分钟，安住当下。</h2>
+        <ul class="audio-tracks" role="list"></ul>
+        <a class="audio-follow-link" href="#life">冥想、求真、见己。去遇见同频人 ↗</a>
+      </div>
+      <audio preload="none"></audio>
+    </dialog>
     <script src="current-recommendation-local.js"></script>
-    <script src="app.js?v=2.0.0-journal-12"></script>
+    <script src="app.js?v=2.0.0-journal-14"></script>
+    <script src="audio-player.js?v=2.0.0-journal-14"></script>
   </body>
 </html>

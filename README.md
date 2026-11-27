@@ -15,6 +15,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 - `dist/index.html`：封面、正文素材、相册和微信联系窗口。
 - `dist/app.js`：页序、各页正文编排及翻页、弹层和相册交互。
 - `dist/style.css`：手账视觉及响应式布局。
+- `dist/audio-player.js` 与 `dist/audio-player.css`：全站浮动音频播放器，音频位于 `dist/assets/life-audio/`。
 - `dist/assets/`：页面使用的插画、纹理、字体和二维码。
 - `scripts/check.py`：发布前检查。
 - `CHANGELOG.md`：正式版本记录。
@@ -33,6 +34,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 
 ```sh
 node --check dist/app.js
+node --check dist/audio-player.js
 python3 scripts/check.py --sync-recommendation
 ```
 

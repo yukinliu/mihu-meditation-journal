@@ -27,6 +27,14 @@ const el = (tag, text, cls) => {
   if (cls) n.className = cls;
   return n;
 };
+function contactCode(alt) {
+  const code = el("img", "", "journal-wechat-qr");
+  code.src = "assets/wechat-reading.png";
+  code.alt = alt;
+  code.width = 287;
+  code.height = 287;
+  return code;
+}
 function entryCue() {
   const cue = el("span", "", "entry-cue");
   cue.setAttribute("aria-hidden", "true");
@@ -236,20 +244,18 @@ const meditationHeader = el("header", "", "meditation-header");
 meditationHeader.append(el("h1", "由练习开始，慢慢丰盛日常"));
 const customCards = el("div", "", "custom-cards meditation-services");
 const groupCard = el("article", "", "custom-card meditation-group-card");
-const groupAction = el("button", "加入共练", "group-reading-action");
+const groupAction = el("button", "扫码加入共练", "group-reading-action");
 groupAction.type = "button";
 groupAction.dataset.project = "meditation-group";
 groupAction.setAttribute("aria-haspopup", "dialog");
-const groupQR = el("img", "", "group-wechat-qr");
-groupQR.src = "assets/wechat-reading.png";
-groupQR.alt = "扫码联系刘迷糊，加入团体冥想";
+const groupQR = contactCode("扫码联系刘迷糊，加入团体冥想");
 const groupArtwork = clone(group.querySelector(".scene img"));
 groupArtwork.alt = "";
 const groupCopy = el("span", "", "custom-card-copy");
 groupCopy.append(el("strong", "团体冥想"), el("span", "在群体的抱持中，借由彼此的照见，慢慢建立稳定的练习节奏"),
   el("span", "适合：想开始冥想，或需要一点外在动力陪伴的你", "meditation-card-fit"));
 const groupJoin = el("span", "", "group-join");
-groupJoin.append(groupAction, groupQR);
+groupJoin.append(groupQR, groupAction);
 groupCopy.append(groupJoin);
 groupCard.append(groupArtwork, groupCopy);
 customCards.append(groupCard);
@@ -258,10 +264,13 @@ designLink.href = "#meditation-design";
 
 meditationHeader.append(designLink);
 const meditationFooter = el("div", "", "meditation-practice-footer");
-meditationFooter.append(el("p", "每一次练习，都是回到自己的过程。"),
+meditationFooter.append(el("p", "每一次练习，都是回到自己的过程"),
   el("p"));
 const meditationContactHint = meditationFooter.lastElementChild;
-meditationContactHint.append(el("strong", "还不确定怎么选？", "journal-emphasis"), " 点击右上角“联系刘迷糊”，讨论看看");
+meditationContactHint.append(
+  el("strong", "不确定怎么选？", "journal-emphasis"),
+  "点击右上角", el("span", "“联系刘迷糊”，", "meditation-contact-name"), "分享给我你的疑虑",
+);
 meditationSheet.append(meditationHeader, customCards, meditationFooter);
 add("meditation", "meditation", "科学冥想", [meditationSheet]);
 
@@ -294,8 +303,8 @@ designSheet.append(principles);
 add("meditation-design", "meditation", "设计理念", [designSheet]);
 
 const customOptions = [
-  ["individual-practice", "一对一冥想", "围绕你当下的具体卡点（如焦虑、走神），量身调整练习方案", "时间灵活，希望针对个人状态做深度探索的你", "了解定制"],
-  ["individual-extension", "心力发展", "通过线上深度对话，结合正念、图卡与叙事，理清关系与选择。", "正经历人生转折，渴望梳理边界与内心秩序的你。", "启动心力发展"],
+  ["individual-practice", "一对一冥想", "围绕你当下的具体卡点（如焦虑、走神），量身调整练习方案", "时间灵活，希望针对个人情况定制冥想练习的你", "开启专属定制"],
+  ["individual-extension", "心力发展", "通过线上深度对话，结合正念、图卡与叙事，理清关系与选择。", "正经历人生转折，渴望梳理边界与内心秩序的你。", "开启深度对话"],
 ];
 const coverPlate = cover.querySelector(".cover-plate");
 const coverRecommendation = el("a", "", "cover-recommendation");
@@ -328,7 +337,7 @@ const lifeGallery = makePosterGallery("见己图文", "jianji-poster-original", 
   "见己实际界面：项目",
   "见己实际界面：统计",
 ]);
-const downloadQR = jianjiImage("download-sticker", "见己软件下载二维码，扫码下载，免费使用");
+const downloadQR = jianjiImage("download-sticker", "扫码打开见己下载页");
 downloadQR.className = "jianji-download-sticker";
 
 const reading = el("section", "", "life-reading");
@@ -367,12 +376,7 @@ readingInvitation.append(
   el("p", "微信备注「共读」免费加入", "life-invitation"),
   readingJoinNote,
 );
-const readingQR = el("img", "", "life-wechat-qr");
-readingQR.src = "assets/wechat-reading.png";
-readingQR.alt = "刘迷糊的个人微信二维码，备注「共读」免费加入";
-readingQR.width = 287;
-readingQR.height = 287;
-readingContact.append(readingInvitation, readingQR);
+readingContact.append(readingInvitation, contactCode("刘迷糊的个人微信二维码，备注「共读」免费加入"));
 const readingBooks = el("ul", "", "life-books");
 readingBooks.setAttribute("role", "list");
 readingBooks.setAttribute("aria-label", "共读书单");
@@ -593,34 +597,41 @@ const trainingSheet = el("section", "", "training-sheet");
 const collaboration = el("section", "", "collaboration-section");
 const collaborationIntro = el("p", "", "collaboration-intro");
 collaborationIntro.append(
-  el("strong", "我开放了原创的正念与心理活动方案授权，以及内容合作。", "journal-emphasis"),
-  "如果你希望将成熟的课程引入你的平台，或联合开发新的内容，我们可以聊聊。",
+  el("strong", "我开放了原创的正念与心理活动方案授权及内容合作。", "journal-emphasis"),
+  "如果你希望将成熟、高质量的正念冥想方案引入平台，或联合开发新内容，我们可以聊聊。",
 );
-collaboration.append(el("p", "面向团队、机构与项目组织者", "collaboration-audience"), collaborationIntro);
+collaboration.append(
+  el("h1", "授权与合作"),
+  el("p", "面向团队、机构与项目组织者。", "collaboration-audience"),
+  collaborationIntro,
+);
 const collaborationCards = el("div", "", "collaboration-cards");
 for (const [key, title, summary, imageFile] of [
-  ["merp", "21 天正念情绪调节", "完整的每日引导与操作方案，支持机构获取授权，独立落地开展。", "project-vignette-merp.png"],
-  ["family", "4 周正念养育团辅", "包含团体流程设计与正念工具包，支持机构获取内容授权。", "project-vignette-family.png"],
-  ["content-development", "正念内容联合开发", "提供现成的活动设计包、引导词库与内容授权，或基于你的平台需求联合出品。", "collaboration-group.png"],
-  ["jianji-collaboration", "见己记录软件", "为你们的课程与项目提供软件接入授权，作为学员日常记录与回顾的辅助工具。", "collaboration-jianji.png"],
+  ["merp", "21 天正念情绪调节", "提供完整的每日引导音频与操作手册，支持直接引入落地。", "project-vignette-merp.png"],
+  ["family", "4 周正念养育团辅", "包含团体流程设计、正念工具包及带领指南，支持获取内容授权。", "project-vignette-family.png"],
+  [null, "正念内容联合开发", "提供正念冥想内容及完整方案设计，或结合你们的平台需求，联合研发与出品。", "collaboration-group.png"],
+  ["jianji-collaboration", "见己记录软件", "提供软件接入与授权，作为日常觉察记录与课后回顾的辅助工具。", "collaboration-jianji.png"],
 ]) {
-  const card = el("button", "", "collaboration-card");
-  card.type = "button";
-  card.dataset.project = key;
-  card.setAttribute("aria-haspopup", "dialog");
+  const card = el(key ? "button" : "article", "", "collaboration-card");
   const artwork = el("img", "", "collaboration-art");
   artwork.src = "assets/" + imageFile;
   artwork.alt = "";
   const copy = el("span", "", "collaboration-copy");
   copy.append(el("strong", title), el("span", summary));
-  card.append(artwork, copy, entryCue());
+  card.append(artwork, copy);
+  if (key) {
+    card.type = "button";
+    card.dataset.project = key;
+    card.setAttribute("aria-haspopup", "dialog");
+    card.append(entryCue());
+  }
   collaborationCards.append(card);
 }
 collaboration.append(collaborationCards);
-const collaborationContact = el("button", "了解授权与内容开发", "meditation-contact collaboration-contact");
-collaborationContact.type = "button";
-collaborationContact.dataset.project = "content-development";
-collaborationContact.setAttribute("aria-haspopup", "dialog");
+const collaborationContact = el("figure", "", "collaboration-contact-code");
+const collaborationQR = el("span", "", "collaboration-qr-paper");
+collaborationQR.append(contactCode("扫码联系刘迷糊，了解授权与内容开发"));
+collaborationContact.append(collaborationQR, el("figcaption", "了解授权与内容开发"));
 trainingSheet.append(collaboration, collaborationContact);
 add("training", "training", "授权与合作", [trainingSheet]);
 // Confirmed opening three leaves, in chronological reading order.
@@ -758,30 +769,6 @@ function projectContact(action) {
   return contact;
 }
 const projectContent={};
-const licensingNote = el("section", "", "project-entry illustrated-detail");
-const licensingArt = el("img", "", "project-detail-art");
-licensingArt.src = "assets/collaboration-group.png";
-licensingArt.alt = "";
-const licensingCopy = el("div", "", "project-detail-copy");
-const licensingOptions = el("ul", "", "collaboration-detail-list");
-for (const [title, description] of [
-  ["原创方案授权", "如果你已有带领团队，可以围绕情绪调节、正念养育等原创方案，沟通可授权的内容和使用范围。"],
-  ["正念内容联合开发", "根据你的平台、参与人群和项目目标，一起确定适合的练习主题、活动流程或引导词。"],
-  ["见己软件接入", "如果课程或项目需要日常记录与回顾工具，可以一起讨论见己的使用方式。"],
-]) {
-  const item = el("li");
-  item.append(el("strong", title + "：", "journal-emphasis"), description);
-  licensingOptions.append(item);
-}
-licensingCopy.append(
-  el("h2", "授权与内容开发"),
-  el("p", "适合正在规划课程、活动或学员支持项目的团队与机构。"),
-  licensingOptions,
-  el("p", "联系时，可以简单介绍你的机构、参与者和希望开展的项目，我们再一起讨论合适的合作方式。"),
-  projectContact("沟通授权与合作"),
-);
-licensingNote.append(licensingArt, licensingCopy);
-projectContent["content-development"] = licensingNote;
 const jianjiCollaboration = el("section", "", "project-entry illustrated-detail");
 const jianjiDetailArt = el("img", "", "project-detail-art");
 jianjiDetailArt.src = "assets/collaboration-jianji.png";
@@ -804,9 +791,24 @@ for (const [title, description] of [
   jianjiFeatures.append(item);
 }
 const jianjiDownload = el("div", "", "project-contact collaboration-download");
-jianjiDownload.append(jianjiFeatureButton, clone(downloadQR));
-jianjiDetailCopy.append(
+const jianjiDownloadFigure = el("figure", "", "jianji-download-figure");
+const jianjiCode = el("div", "", "jianji-download-code");
+jianjiCode.append(downloadQR);
+const jianjiDownloadCaption = el("figcaption");
+const jianjiStore = el("a", "Windows 商店");
+jianjiStore.href = "https://apps.microsoft.com/detail/9ND52LNJFKC0?hl=zh-cn&gl=CN";
+jianjiStore.target = "_blank";
+jianjiStore.rel = "noopener";
+jianjiDownloadCaption.append("扫码下载丨 ", jianjiStore, el("br"), "免费使用");
+jianjiDownloadFigure.append(jianjiCode, jianjiDownloadCaption);
+jianjiDownload.append(jianjiFeatureButton, jianjiDownloadFigure);
+const jianjiIdentity = el("div", "", "jianji-project-identity");
+jianjiIdentity.append(
   el("span", "见己 · 自我觉察与成长记录", "project-kicker"),
+  el("small", "软著登字第18390638号"),
+);
+jianjiDetailCopy.append(
+  jianjiIdentity,
   el("h2", "让每一次积累，在未来依然有意义"), jianjiIntro,
   el("h3", "核心特点"), jianjiFeatures,
   jianjiDownload
@@ -852,7 +854,7 @@ journalSlip.type = "button";
 journalSlip.id = "jianji-record";
 journalSlip.dataset.project = "jianji-collaboration";
 journalSlip.setAttribute("aria-haspopup", "dialog");
-journalSlip.append(el("span", "正念记录"), clone(jianjiDetailArt), entryCue());
+journalSlip.append(el("span", "正念记录日常"), clone(jianjiDetailArt), entryCue());
 projectStrip.append(journalSlip);
 for (const [index, [key, label, summary, fit, action]] of customOptions.entries()) {
   const card = el("button", "", "custom-card");
@@ -903,7 +905,7 @@ for (const [index, [key, label, summary, fit, action]] of customOptions.entries(
     el("p", "每个人的卡点都不一样。如果你正面临特定的困扰（比如容易焦虑、注意力难以集中），或者时间比较碎片化，一对一的引导能为你提供更灵活、更个性化的支持。"),
     soloMethod,
     el("p", "如果你不确定这种形式是否适合自己，或者想先聊聊具体的练习困扰，欢迎随时联系我。我们聊聊，再决定下一步。", "solo-practice-invitation"),
-    projectContact("了解定制")
+    projectContact(action)
   );
   note.append(soloArt, soloCopy);
   projectContent[key] = note;
@@ -956,7 +958,7 @@ projectDialog.addEventListener("click", event => {
     openJianjiFeatures(jianjiButton);
     return;
   }
-  if (event.target.closest(".project-contact") && !event.target.closest("a")) return;
+  if (event.target.closest(".project-contact")) return;
   if (event.target.closest(".custom-detail") && !event.target.closest("a")) return;
   projectDialog.close();
 });

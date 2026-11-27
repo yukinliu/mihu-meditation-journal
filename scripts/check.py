@@ -75,8 +75,14 @@ for ref in page.refs:
         assert ref[1:] in page.ids or ref in {'#cover', '#meditation', '#jianji'}, ref
     elif not re.match(r'\w+:|//', ref):
         assert (DIST / ref.split("?", 1)[0]).is_file(), ref
+audio_player = (DIST / 'audio-player.js').read_text(encoding='utf-8')
+audio_tracks = re.findall(r'^    \["([a-z-]+)", "', audio_player, re.MULTILINE)
+assert len(audio_tracks) == len(set(audio_tracks)) == 5, 'Expected five audio tracks'
+for track in audio_tracks:
+    assert (DIST / 'assets' / 'life-audio' / f'{track}.mp3').is_file(), track
+
 for file in DIST.rglob('*'):
-    if file.is_file():
+    if file.is_file() and file.name != '.DS_Store':
         assert file.suffix in {'.html', '.css', '.js', '.json', '.svg', '.png', '.jpg', '.woff2', '.mp3'}, file
 assert not list(DIST.glob('*-v[23].*')), 'Experimental pages in release'
-print('PASS: HTML, tabs, images, links, CSS resources, current activity and release allowlist')
+print('PASS: HTML, tabs, images, links, CSS resources, audio, current activity and release allowlist')
