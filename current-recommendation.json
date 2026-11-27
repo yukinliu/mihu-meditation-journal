@@ -1,0 +1,25 @@
+{
+  "title": "正念共读",
+  "summary": "把书读厚，把生活过轻盈。和同伴一起读书，把书里的智慧带进练习与生活。",
+  "image": "https://meditation.mihuspace.com/assets/training-books.png",
+  "sections": [
+    {
+      "title": "本期聚焦：《成为自己》",
+      "paragraphs": [
+        "最近大家都在聊，如何重置思维，卸下「必须完美」的包袱。"
+      ]
+    },
+    {
+      "title": "如何加入",
+      "paragraphs": [
+        "选书与安排在群内公布，随时潜水也可以。"
+      ]
+    }
+  ],
+  "qrImage": "https://meditation.mihuspace.com/assets/wechat-reading.png",
+  "actionText": "微信备注「共读」免费加入",
+  "target": {
+    "page": "life",
+    "section": "life-reading"
+  }
+}
