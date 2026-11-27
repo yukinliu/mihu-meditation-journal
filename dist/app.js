@@ -3,6 +3,18 @@ const main = document.getElementById("page");
 const sheet = document.querySelector(".notebook > .sheet");
 const cover = document.getElementById("book-cover");
 const tabs = [...document.querySelectorAll("[data-page]")];
+function setPointerFocus() {
+  document.documentElement.setAttribute("data-pointer-focus", "");
+}
+document.addEventListener("pointerdown", setPointerFocus, true);
+document.addEventListener("click", event => {
+  if (event.detail > 0) setPointerFocus();
+}, true);
+document.addEventListener("keydown", event => {
+  if (["Tab", "Enter", " ", "Escape", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+    document.documentElement.removeAttribute("data-pointer-focus");
+  }
+}, true);
 const roots = ["about", "group", "individual", "life", "training"];
 const original = Object.fromEntries(
   roots.map((id) => [id, document.getElementById(id)]),
@@ -15,6 +27,11 @@ const el = (tag, text, cls) => {
   if (cls) n.className = cls;
   return n;
 };
+function entryCue() {
+  const cue = el("span", "", "entry-cue");
+  cue.setAttribute("aria-hidden", "true");
+  return cue;
+}
 function links(items) {
   const n = document.createElement("div");
   n.className = "reader-links";
@@ -105,7 +122,9 @@ for (const [key, year, label] of [
   const figure = el("img", "", "home-figure");
   figure.src = "assets/home-" + key + ".png";
   figure.alt = "";
-  stop.append(figure, caption);
+  const illustration = el("span", "", "home-journey-illustration");
+  illustration.append(figure, entryCue());
+  stop.append(illustration, caption);
   map.append(stop);
 }
 const slow = el("section", "", "home-slow");
@@ -216,29 +235,35 @@ const meditationSheet = el("section", "", "meditation-sheet");
 const meditationHeader = el("header", "", "meditation-header");
 meditationHeader.append(el("h1", "由练习开始，慢慢丰盛日常"));
 const customCards = el("div", "", "custom-cards meditation-services");
-const groupCard = el("button", "", "custom-card meditation-group-card");
-groupCard.type = "button";
-groupCard.dataset.project = "meditation-group";
-groupCard.setAttribute("aria-haspopup", "dialog");
+const groupCard = el("article", "", "custom-card meditation-group-card");
+const groupAction = el("button", "加入共练", "group-reading-action");
+groupAction.type = "button";
+groupAction.dataset.project = "meditation-group";
+groupAction.setAttribute("aria-haspopup", "dialog");
+const groupQR = el("img", "", "group-wechat-qr");
+groupQR.src = "assets/wechat-reading.png";
+groupQR.alt = "扫码联系刘迷糊，加入团体冥想";
 const groupArtwork = clone(group.querySelector(".scene img"));
 groupArtwork.alt = "";
 const groupCopy = el("span", "", "custom-card-copy");
 groupCopy.append(el("strong", "团体冥想"), el("span", "在群体的抱持中，借由彼此的照见，慢慢建立稳定的练习节奏"),
-  el("span", "适合：想开始冥想，或需要一点外在动力陪伴的你", "meditation-card-fit"),
-  el("span", "加入共练", "meditation-card-action"));
+  el("span", "适合：想开始冥想，或需要一点外在动力陪伴的你", "meditation-card-fit"));
+const groupJoin = el("span", "", "group-join");
+groupJoin.append(groupAction, groupQR);
+groupCopy.append(groupJoin);
 groupCard.append(groupArtwork, groupCopy);
 customCards.append(groupCard);
 const designLink = el("a", "了解练习设计理念", "meditation-method-link");
 designLink.href = "#meditation-design";
 
 meditationHeader.append(designLink);
-const meditationFooter = el("footer", "", "meditation-practice-footer");
+const meditationFooter = el("div", "", "meditation-practice-footer");
 meditationFooter.append(el("p", "每一次练习，都是回到自己的过程。"),
   el("p"));
 const meditationContactHint = meditationFooter.lastElementChild;
 meditationContactHint.append(el("strong", "还不确定怎么选？", "journal-emphasis"), " 点击右上角“联系刘迷糊”，讨论看看");
 meditationSheet.append(meditationHeader, customCards, meditationFooter);
-add("meditation", "meditation", "科学练冥想", [meditationSheet]);
+add("meditation", "meditation", "科学冥想", [meditationSheet]);
 
 const designSheet = el("section", "", "meditation-sheet meditation-design");
 designSheet.append(el("h1", "科学冥想 · 设计理念"),
@@ -265,22 +290,28 @@ for (const [style, title, copy, crop] of [
   entry.append(art, text);
   principles.append(entry);
 }
-const designQuestions = el("section", "", "design-questions");
-const questionsBody = el("p", "如果你对冥想好奇，或者练习中遇到了不知道怎么处理的疑问，都可以随时找我。");
-questionsBody.append(el("strong", "无论你是否购买了服务，都欢迎你问。", "journal-emphasis"), "对我而言，解答这些问题也是梳理和精进的过程。");
-const freeQuestions = el("button", "问个问题", "meditation-contact");
-freeQuestions.type = "button";
-freeQuestions.dataset.contact = "";
-freeQuestions.setAttribute("aria-haspopup", "dialog");
-designQuestions.append(el("h2", "有问题，随时可以聊聊"), questionsBody, freeQuestions);
-designSheet.append(principles, designQuestions);
+designSheet.append(principles);
 add("meditation-design", "meditation", "设计理念", [designSheet]);
 
 const customOptions = [
   ["individual-practice", "一对一冥想", "围绕你当下的具体卡点（如焦虑、走神），量身调整练习方案", "时间灵活，希望针对个人状态做深度探索的你", "了解定制"],
   ["individual-extension", "心力发展", "通过线上深度对话，结合正念、图卡与叙事，理清关系与选择。", "正经历人生转折，渴望梳理边界与内心秩序的你。", "启动心力发展"],
 ];
-const lifeSheet = el("section", "", "life-sheet jianji-sheet");
+const coverPlate = cover.querySelector(".cover-plate");
+const coverRecommendation = el("a", "", "cover-recommendation");
+const recommendationTitle = el("span");
+const recommendationArrow = el("span", "", "cover-chevron");
+recommendationArrow.setAttribute("aria-hidden", "true");
+coverRecommendation.append(recommendationTitle, recommendationArrow);
+const tabRecommendation = el("span", "正好", "tab-recommendation");
+
+const lifeSheet = el("div", "", "life-sheet");
+const lifeIntro = el("div", "", "life-intro");
+lifeIntro.append(
+  el("h1", "期待与你，同频相遇"),
+  el("p", "有些触动，不知与谁分享；有些安静，显得有些格格不入"),
+  el("p", "在这里，不用解释，也不必假装，我们期待你来"),
+);
 function jianjiImage(file, alt = "") {
   const img = el("img");
   img.src = "assets/jianji-" + file + ".png";
@@ -288,9 +319,6 @@ function jianjiImage(file, alt = "") {
   img.loading = "lazy";
   return img;
 }
-const lifeHeading = el("div", "", "jianji-heading");
-lifeHeading.append(el("h1", "见己｜把日常留下来，慢慢看见自己"));
-const lifeIntro = el("p", "日常感受、想法，练习中的发现，还有一天里发生的微小片段，都可以成为理解自己的线索。见己是一款电脑端记录工具（支持 Mac / Windows），不打卡、不评分，只为让你随手记下当下，需要时能找回理解。");
 const lifeGallery = makePosterGallery("见己图文", "jianji-poster-original", [
   "见己简介",
   "写作、学习、工作与生活记录",
@@ -301,11 +329,91 @@ const lifeGallery = makePosterGallery("见己图文", "jianji-poster-original", 
   "见己实际界面：统计",
 ]);
 const downloadQR = jianjiImage("download-sticker", "见己软件下载二维码，扫码下载，免费使用");
-downloadQR.loading = "eager";
 downloadQR.className = "jianji-download-sticker";
-lifeGallery.querySelector(".jianji-poster-controls").append(downloadQR);
-lifeSheet.append(lifeHeading, lifeIntro, lifeGallery);
-add("life", "life", "正念生活", [lifeSheet]);
+
+const reading = el("section", "", "life-reading");
+reading.id = "life-reading";
+reading.setAttribute("aria-labelledby", "life-reading-title");
+const readingTitle = el("h2", "正念共读");
+readingTitle.id = "life-reading-title";
+readingTitle.tabIndex = -1;
+const readingTagline = el("p", "把书读厚，把生活过轻盈", "life-reading-tagline");
+const readingIntro = el("div", "", "life-reading-intro");
+const readingPlan = el("p");
+readingPlan.append(
+  el("strong", "邀你加入「正念共读计划」"),
+  "。我们不追求读完多少本，而是借由文字的碰撞，把书里的智慧，慢慢带进真实的练习与生活里。",
+);
+readingIntro.append(
+  el("p", "有些内容，一个人读会停在脑海；同频的人聊起，却能落进生活。"),
+  readingPlan,
+);
+const readingFocus = el("aside", "", "life-reading-focus");
+const readingFocusTitle = el("h2");
+const readingFocusBook = el("span", "📖", "life-reading-symbol");
+readingFocusBook.setAttribute("aria-hidden", "true");
+readingFocusTitle.append(readingFocusBook, "本期聚焦：《成为自己》");
+const readingFocusTopic = el("p");
+const readingFocusChat = el("span", "💬", "life-reading-symbol");
+readingFocusChat.setAttribute("aria-hidden", "true");
+readingFocusTopic.append(readingFocusChat, "最近大家都在聊：“如何‘重置思维’，卸下‘必须完美’的包袱？”");
+readingFocus.append(readingFocusTitle, readingFocusTopic);
+
+const readingContact = el("div", "", "life-qr-row life-reading-contact");
+const readingInvitation = el("div");
+const readingJoinNote = el("p", "", "life-note");
+readingJoinNote.append(el("span", "选书与安排群内公布｜"), el("span", "随时潜水也可以"));
+readingInvitation.append(
+  el("p", "微信备注「共读」免费加入", "life-invitation"),
+  readingJoinNote,
+);
+const readingQR = el("img", "", "life-wechat-qr");
+readingQR.src = "assets/wechat-reading.png";
+readingQR.alt = "刘迷糊的个人微信二维码，备注「共读」免费加入";
+readingQR.width = 287;
+readingQR.height = 287;
+readingContact.append(readingInvitation, readingQR);
+const readingBooks = el("ul", "", "life-books");
+readingBooks.setAttribute("role", "list");
+readingBooks.setAttribute("aria-label", "共读书单");
+for (const [title, author] of [
+  ["《正念的奇迹》", "一行禅师"],
+  ["《正念：此刻是一枝花》", "乔·卡巴金"],
+  ["《观呼吸：平静的第一堂课》", "德宝法师"],
+  ["《自我关怀的力量》", "克里斯廷·内夫"],
+  ["《全然接受这样的我》", "塔拉·布莱克"],
+]) {
+  const item = el("li");
+  item.append(el("span", title), el("small", author));
+  readingBooks.append(item);
+}
+const readingArt = el("img", "", "life-reading-art");
+readingArt.src = "assets/training-books.png";
+readingArt.alt = "";
+readingArt.width = 740;
+readingArt.height = 493;
+const readingList = el("figure", "", "life-reading-list");
+readingList.append(
+  readingBooks,
+  readingArt,
+  el("figcaption", "书单持续更新中，欢迎来群里一起选书…"),
+);
+reading.append(readingTitle, readingTagline, readingIntro, readingFocus, readingContact, readingList);
+
+const lifeQuestions = el("section", "", "life-questions");
+lifeQuestions.id = "life-questions";
+const questionHeading = el("h2");
+const freeQuestions = el("button", "问个问题", "meditation-contact");
+freeQuestions.type = "button";
+freeQuestions.dataset.contact = "";
+freeQuestions.setAttribute("aria-haspopup", "dialog");
+questionHeading.append(freeQuestions);
+const questionsBody = el("p");
+questionsBody.append(el("strong", "无论你是否购买了服务，都可以来找我聊聊。", "journal-emphasis"),
+  "对我而言，解答这些问题也是梳理和精进的过程。");
+lifeQuestions.append(questionHeading, el("p", "对冥想好奇？或者练习中遇到了卡点？"), questionsBody);
+lifeSheet.append(lifeIntro, reading, lifeQuestions);
+add("life", "life", "志同道合", [lifeSheet]);
 
 function makePosterGallery(label, filePrefix, descriptions) {
   const gallery = el("div", "", "jianji-gallery");
@@ -354,6 +462,8 @@ viewerClose.setAttribute("aria-label", "返回海报切换");
 viewerClose.append(viewerImage);
 const viewerSave = el("a", "保存原图", "poster-viewer-save");
 const viewerToolbar = el("div", "", "poster-viewer-tools");
+viewerToolbar.tabIndex = -1;
+viewerToolbar.setAttribute("autofocus", "");
 const viewerCount = el("span");
 viewerCount.setAttribute("aria-live", "polite");
 let viewerStep;
@@ -481,45 +591,38 @@ function bindPosterGallery(root) {
 }
 const trainingSheet = el("section", "", "training-sheet");
 const collaboration = el("section", "", "collaboration-section");
-const collaborationIntro = el("p", "面向团队、机构与项目组织者。如果你希望开展冥想活动、情绪调节、支持家长群体，或需要一款日常记录软件，");
-collaborationIntro.append(el("strong", "我们可以一起，为你的参与者量身定制贴合他们当下需求的方案。", "journal-emphasis"));
-collaboration.append(collaborationIntro);
+const collaborationIntro = el("p", "", "collaboration-intro");
+collaborationIntro.append(
+  el("strong", "我开放了原创的正念与心理活动方案授权，以及内容合作。", "journal-emphasis"),
+  "如果你希望将成熟的课程引入你的平台，或联合开发新的内容，我们可以聊聊。",
+);
+collaboration.append(el("p", "面向团队、机构与项目组织者", "collaboration-audience"), collaborationIntro);
 const collaborationCards = el("div", "", "collaboration-cards");
 for (const [key, title, summary, imageFile] of [
-  ["merp", "正念情绪调节", "每天 15 分钟，以持续练习支持情绪觉察与调节", "project-vignette-merp.png"],
-  ["family", "正念养育团辅", "从家长的情绪觉察入手，探索把练习带回日常亲子相处", "project-vignette-family.png"],
-  ["custom-group", "定制团体活动", "为团队或机构设计贴合场景的冥想与心理主题活动", "collaboration-group.png"],
-  ["jianji-collaboration", "见己记录软件", "一款保护你隐私的日常记录软件，让轻量碎片记录在AI时代释放更大价值。", "collaboration-jianji.png"],
+  ["merp", "21 天正念情绪调节", "完整的每日引导与操作方案，支持机构获取授权，独立落地开展。", "project-vignette-merp.png"],
+  ["family", "4 周正念养育团辅", "包含团体流程设计与正念工具包，支持机构获取内容授权。", "project-vignette-family.png"],
+  ["content-development", "正念内容联合开发", "提供现成的活动设计包、引导词库与内容授权，或基于你的平台需求联合出品。", "collaboration-group.png"],
+  ["jianji-collaboration", "见己记录软件", "为你们的课程与项目提供软件接入授权，作为学员日常记录与回顾的辅助工具。", "collaboration-jianji.png"],
 ]) {
   const card = el("button", "", "collaboration-card");
   card.type = "button";
   card.dataset.project = key;
   card.setAttribute("aria-haspopup", "dialog");
-  const arrow = el("span", "↗", "collaboration-arrow");
-  arrow.setAttribute("aria-hidden", "true");
   const artwork = el("img", "", "collaboration-art");
   artwork.src = "assets/" + imageFile;
   artwork.alt = "";
   const copy = el("span", "", "collaboration-copy");
   copy.append(el("strong", title), el("span", summary));
-  card.append(artwork, copy, arrow);
+  card.append(artwork, copy, entryCue());
   collaborationCards.append(card);
 }
 collaboration.append(collaborationCards);
-const trainingPlan = el("section", "", "training-plan");
-const trainingCopy = el("div");
-const trainingArt = el("img", "", "training-art");
-trainingArt.src = "assets/training-books.png";
-trainingArt.alt = "";
-trainingCopy.append(el("h2", "冥想带领者培训方案"), el("span", "进行中", "status"),
-  el("p", "从真实带练中的问题出发，练习设计、引导和临场调整。"), el("p", "冥想基础 · 方案设计 · 引导与答疑 · 能力评估", "journal-emphasis"));
-trainingPlan.append(trainingCopy, trainingArt);
-const collaborationContact = el("button", "感兴趣？欢迎沟通合作", "meditation-contact collaboration-contact");
+const collaborationContact = el("button", "了解授权与内容开发", "meditation-contact collaboration-contact");
 collaborationContact.type = "button";
-collaborationContact.dataset.contact = "";
+collaborationContact.dataset.project = "content-development";
 collaborationContact.setAttribute("aria-haspopup", "dialog");
-trainingSheet.append(collaboration, collaborationContact, trainingPlan);
-add("training", "training", "合作与培训", [trainingSheet]);
+trainingSheet.append(collaboration, collaborationContact);
+add("training", "training", "授权与合作", [trainingSheet]);
 // Confirmed opening three leaves, in chronological reading order.
 const originCopy = [
   "起初练习断断续续，也说不清为什么练习。只记得结束后，整个人很明亮、很舒服。",
@@ -629,7 +732,7 @@ thirdMemory.append("见完导师、选定方向后，一切似乎都没变，但
 restartMemories.append(firstMemory, secondMemory, thirdMemory);
 restartDiary.firstElementChild.append(restartMemories);
 const projectStrip = el("div", "", "project-strip illustrated-projects");
-projectStrip.setAttribute("aria-label", "研究项目");
+projectStrip.setAttribute("aria-label", "研究项目与记录工具");
 const projectSection = el("section", "", "restart-projects");
 projectSection.append(projectStrip);
 const award = "项目获 2026 年浙江大学心理系应用心理大赛三等奖。";
@@ -643,11 +746,11 @@ const projectSpecs = [
   {key:"family", label:"正念养育团辅", title:"从家长的觉察，走向亲子互动", paragraphs:[
     "这套为期 4 周的正念养育团辅方案，由我独立设计。",
     "通过正念冥想与团体交流，练习觉察自己的情绪与反应，探索怎样把觉察与调节带入亲子互动。",
-  ], feedback:["我觉得我在慢慢学会接纳生活中的一些‘错误’和‘意外’","虽然有焦急，……而是耐心等待他完成，最终当他走出书房时，我很欣喜"], result:award, action:"扫码了解项目合作"},
+  ], feedback:["我觉得我在慢慢学会接纳生活中的一些‘错误’和‘意外’","虽然有焦急，……而是耐心等待他完成，最终当他走出书房时，我很欣喜"], result:award},
   {key:"merp", label:"正念情绪调节", title:"每天 15 分钟，留意情绪，也练习如何回应。", paragraphs:[
     "正念情绪调节（MERP）是我独立设计的练习方案。",
     "通过每天 15 分钟的冥想练习，支持参与者觉察情绪与惯常反应，逐步探索更适合自己的回应方式。",
-  ], feedback:["我注视到了身体的信号，我接受一些不舒服，内心仿佛更豁达了……","用很具体的方法，体会呼吸的深远和力度，……这样也可以减少走神的频次。"], result:"截至 2026 年 11 月，已有近 400 人加入练习。"+award, action:"扫码了解练习或讨论合作"},
+  ], feedback:["我注视到了身体的信号，我接受一些不舒服，内心仿佛更豁达了……","用很具体的方法，体会呼吸的深远和力度，……这样也可以减少走神的频次。"], result:"截至 2026 年 11 月，已有近 400 人加入练习。"+award},
 ];
 function projectContact(action) {
   const contact = el("div", "", "project-contact");
@@ -655,28 +758,30 @@ function projectContact(action) {
   return contact;
 }
 const projectContent={};
-const customGroupNote = el("section", "", "project-entry illustrated-detail");
-const customGroupArt = el("img", "", "project-detail-art");
-customGroupArt.src = "assets/collaboration-group.png";
-customGroupArt.alt = "";
-const customGroupCopy = el("div", "", "project-detail-copy");
-const collaborationSteps = el("ol", "", "collaboration-detail-list");
+const licensingNote = el("section", "", "project-entry illustrated-detail");
+const licensingArt = el("img", "", "project-detail-art");
+licensingArt.src = "assets/collaboration-group.png";
+licensingArt.alt = "";
+const licensingCopy = el("div", "", "project-detail-copy");
+const licensingOptions = el("ul", "", "collaboration-detail-list");
 for (const [title, description] of [
-  ["需求梳理", "先明确参与者、活动目标与现场条件。"],
-  ["方案定制", "按需要安排正念练习、主题交流与答疑。"],
-  ["现场带领", "现场引导练习，留出体验与提问时间。"],
-  ["阶段复盘", "多次活动可结合反馈，调整下一阶段的练习。"],
+  ["原创方案授权", "如果你已有带领团队，可以围绕情绪调节、正念养育等原创方案，沟通可授权的内容和使用范围。"],
+  ["正念内容联合开发", "根据你的平台、参与人群和项目目标，一起确定适合的练习主题、活动流程或引导词。"],
+  ["见己软件接入", "如果课程或项目需要日常记录与回顾工具，可以一起讨论见己的使用方式。"],
 ]) {
   const item = el("li");
   item.append(el("strong", title + "：", "journal-emphasis"), description);
-  collaborationSteps.append(item);
+  licensingOptions.append(item);
 }
-customGroupCopy.append(el("h2", "定制团体活动：从真实需求出发"),
-  el("p", "为团队或机构定制冥想与心理主题活动，可安排单场体验或阶段性练习。"),
-  el("h3", "我们可以这样合作"), collaborationSteps,
-  projectContact("沟通活动需求"));
-customGroupNote.append(customGroupArt, customGroupCopy);
-projectContent["custom-group"] = customGroupNote;
+licensingCopy.append(
+  el("h2", "授权与内容开发"),
+  el("p", "适合正在规划课程、活动或学员支持项目的团队与机构。"),
+  licensingOptions,
+  el("p", "联系时，可以简单介绍你的机构、参与者和希望开展的项目，我们再一起讨论合适的合作方式。"),
+  projectContact("沟通授权与合作"),
+);
+licensingNote.append(licensingArt, licensingCopy);
+projectContent["content-development"] = licensingNote;
 const jianjiCollaboration = el("section", "", "project-entry illustrated-detail");
 const jianjiDetailArt = el("img", "", "project-detail-art");
 jianjiDetailArt.src = "assets/collaboration-jianji.png";
@@ -713,7 +818,7 @@ groupNote.append(makePosterGallery("团体冥想图文", "online-meditation", [
   "线上冥想练习", "开始冥想", "你的冥想路径", "不只是练习", "刘迷糊与练习安排", "购买须知"
 ]), projectContact("了解本期安排"));
 projectContent["meditation-group"] = groupNote;
-projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[],feedback,result,action},i)=>{
+projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[],feedback,result},i)=>{
  const note = el("section", "", "project-entry illustrated-detail");
  const detailCopy = el("div", "", "project-detail-copy");
  detailCopy.append(el("span", i === 0 ? "研究手记" : "原创方案", "project-kicker"), el("h2", title));
@@ -727,7 +832,6 @@ projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[],feedback,result,
    remarks.append(el("h3", "练习反馈"), ...feedback.map(text => el("blockquote", "“" + text + "”")));
    detailCopy.append(remarks, el("p", result, "project-detail-highlight"));
  }
- if (action) detailCopy.append(projectContact(action));
  if(refs.length){const row=el('div','','project-references');refs.forEach(([label,url])=>{const a=el('a',label,'text-link');a.href=url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);});detailCopy.append(row);}
  projectContent[key] = note;
  const button = el("button", "", "project-slip");
@@ -740,9 +844,16 @@ projectSpecs.forEach(({key,label,title,paragraphs,links:refs=[],feedback,result,
  const detailArt = clone(artwork);
  detailArt.className = "project-detail-art";
  note.append(detailArt, detailCopy);
- button.append(el("span", label), artwork, el("small", "点击了解"));
+ button.append(el("span", label), artwork, entryCue());
  projectStrip.append(button);
 });
+const journalSlip = el("button", "", "project-slip");
+journalSlip.type = "button";
+journalSlip.id = "jianji-record";
+journalSlip.dataset.project = "jianji-collaboration";
+journalSlip.setAttribute("aria-haspopup", "dialog");
+journalSlip.append(el("span", "正念记录"), clone(jianjiDetailArt), entryCue());
+projectStrip.append(journalSlip);
 for (const [index, [key, label, summary, fit, action]] of customOptions.entries()) {
   const card = el("button", "", "custom-card");
   card.type = "button";
@@ -815,27 +926,34 @@ jianjiFeatureDialog.id = "jianji-feature-dialog";
 jianjiFeatureDialog.setAttribute("aria-labelledby", "jianji-feature-title");
 const jianjiFeatureTitle = el("h2", "见己功能");
 jianjiFeatureTitle.id = "jianji-feature-title";
-const jianjiFeatureBack = el("button", "返回介绍", "jianji-feature-button");
-jianjiFeatureBack.type = "button";
-jianjiFeatureBack.onclick = () => jianjiFeatureDialog.close();
+jianjiFeatureTitle.tabIndex = -1;
+jianjiFeatureTitle.setAttribute("autofocus", "");
 const jianjiFeatureHeader = el("header", "", "jianji-feature-header");
-jianjiFeatureHeader.append(jianjiFeatureTitle, jianjiFeatureBack);
+jianjiFeatureHeader.append(jianjiFeatureTitle);
 const jianjiFeatureStage = el("div", "", "jianji-sheet jianji-feature-stage");
 jianjiFeatureStage.append(clone(lifeGallery));
 jianjiFeatureDialog.append(jianjiFeatureHeader, jianjiFeatureStage);
 document.body.append(jianjiFeatureDialog);
 bindPosterGallery(jianjiFeatureStage);
 jianjiFeatureDialog.addEventListener("click", event => {
-  if (event.target === jianjiFeatureDialog) jianjiFeatureDialog.close();
+  if (!event.target.closest(".jianji-poster-card, .jianji-poster-controls, .jianji-feature-header h2")) {
+    jianjiFeatureDialog.close();
+  }
 });
+let jianjiFeatureOpener;
+function openJianjiFeatures(button) {
+  jianjiFeatureOpener = button;
+  jianjiFeatureDialog.showModal();
+}
 jianjiFeatureDialog.addEventListener("close", () => {
-  projectDialog.querySelector(".jianji-feature-button")?.focus({ preventScroll: true });
+  if (jianjiFeatureOpener?.isConnected) jianjiFeatureOpener.focus({ preventScroll: true });
 });
 
 let projectOpener;
 projectDialog.addEventListener("click", event => {
-  if (event.target.closest(".jianji-feature-button")) {
-    jianjiFeatureDialog.showModal();
+  const jianjiButton = event.target.closest(".jianji-feature-button");
+  if (jianjiButton) {
+    openJianjiFeatures(jianjiButton);
     return;
   }
   if (event.target.closest(".project-contact") && !event.target.closest("a")) return;
@@ -870,12 +988,35 @@ document.addEventListener("click", event => {
 const order=['about','origin','practice','pause','research'];
 const extras=sources.filter(s=>!['story','memories','practice-change','works',...order].includes(s.id));
 const first=order.map(id=>sources.find(s=>s.id===id));sources.splice(0,sources.length,...first,...extras);
-const aliases={cooperation:'training','training-plan':'training',group:'meditation',individual:'meditation','individual-fees':'meditation','individual-questions':'meditation-design',jianji:'life',story:'about',memories:'practice','practice-change':'practice',works:'research','group-plan':'meditation','group-process':'meditation','group-thoughts':'meditation-design'};
+const aliases={cooperation:'training','training-plan':'training',group:'meditation',individual:'meditation','individual-fees':'meditation','individual-questions':'life-questions',jianji:'jianji-record',story:'about',memories:'practice','practice-change':'practice',works:'research','group-plan':'meditation','group-process':'meditation','group-thoughts':'meditation-design'};
 for(const source of sources)for(const node of source.nodes)node.querySelectorAll?.('a[href]').forEach(a=>{const id=a.hash.slice(1);if(aliases[id])a.hash=aliases[id];});
 // Click cues without turning the vignette into a boxed button.
 intro.querySelectorAll(':scope>.reader-links a').forEach(a=>a.textContent=a.textContent.replace(/\s*↗$/,''));
 // Each approved chapter is one leaf. Long entries scroll within the leaf.
 const pages = sources.map(source => ({ ...source, key: source.id }));
+const sectionPages = new Map();
+for (const page of pages) {
+  for (const node of page.nodes) {
+    if (node.id) sectionPages.set(node.id, page);
+    node.querySelectorAll("[id]").forEach(section => sectionPages.set(section.id, page));
+  }
+}
+
+function applyRecommendation(activity) {
+  if (typeof activity?.title !== "string" || !activity.title.trim()) return;
+  const target = activity.target ?? { page: "life" };
+  const page = pages.find(candidate => candidate.key === target.page);
+  if (!page) return;
+  const section = target.section;
+  const destination = sectionPages.get(section) === page ? section : page.key;
+  const tab = tabs.find(tab => tab.dataset.page === page.root);
+  if (!tab) return;
+  recommendationTitle.textContent = "近期活动：" + activity.title;
+  coverRecommendation.href = "#" + encodeURIComponent(destination);
+  if (!coverRecommendation.isConnected) coverPlate.append(coverRecommendation);
+  if (tabRecommendation.parentElement !== tab) tab.append(tabRecommendation);
+}
+
 main.replaceChildren();
 const content = el("article", "", "reader-content");
 main.append(content);
@@ -950,9 +1091,12 @@ function render(key, animate = true) {
     });
     return;
   }
+  const sectionKey = key;
   const customDeepLink = customOptions.some(([id]) => id === key) ? key : null;
   key = customDeepLink ? "meditation" : aliases[key] || key;
-  const page = pages.find(candidate => candidate.key === key) || pages[0];
+  const directPage = pages.find(candidate => candidate.key === key);
+  const sectionPage = directPage ? null : sectionPages.get(sectionKey);
+  const page = directPage || sectionPage || pages[0];
   const index = pages.indexOf(page);
   const previous = pages.findIndex(candidate => candidate.key === current);
   const fromCover = current === "cover";
@@ -965,6 +1109,7 @@ function render(key, animate = true) {
   document.body.classList.remove("cover-mode");
   content.replaceChildren(...page.nodes.map(clone));
   content.scrollTop = 0;
+  const targetSection = sectionPage ? content.querySelector("#" + CSS.escape(sectionKey)) : null;
   current = page.key;
   tabs.forEach(tab => {
     const active = tab.dataset.page === page.root;
@@ -985,6 +1130,9 @@ function render(key, animate = true) {
   bindPosterGallery(content);
   if (customDeepLink) {
     content.querySelector('[data-project="' + customDeepLink + '"]')?.click();
+  } else if (targetSection) {
+    content.scrollTop = targetSection.getBoundingClientRect().top - content.getBoundingClientRect().top;
+    if (animate && !wechatOnIOS) targetSection.querySelector("h1, h2, h3")?.focus({ preventScroll: true });
   } else if (animate && !wechatOnIOS) {
     content.focus({ preventScroll: true });
   }
@@ -1070,5 +1218,12 @@ function bindAlbum() {
 }
 content.tabIndex = -1;
 window.addEventListener("hashchange", route);
+applyRecommendation(window.journalRecommendation);
 render(decodeURIComponent(location.hash.slice(1)) || "cover", false);
 document.documentElement.classList.remove("opening-inner-page");
+if (location.protocol === "http:" || location.protocol === "https:") {
+  fetch("current-recommendation.json", { cache: "no-cache" })
+    .then(response => response.ok ? response.json() : null)
+    .then(applyRecommendation)
+    .catch(() => { /* Keep the published local snapshot if the feed is unavailable. */ });
+}

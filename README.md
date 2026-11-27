@@ -1,6 +1,6 @@
 # 刘迷糊｜冥想手账
 
-当前版本 **2.0.0**。四个页签为我与冥想、科学练冥想、正念生活、合作与培训。
+当前版本 **2.0.0**。四个页签为我与冥想、科学冥想、志同道合、授权与合作。
 
 公开主页：[刘迷糊｜冥想手账](https://meditation.mihuspace.com/)
 
@@ -21,11 +21,19 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 
 团体冥想介绍包含六张正式海报。修改文案时请检查字体子集覆盖。
 
+## 近期活动
+
+每次更新近期活动时，编辑 `dist/current-recommendation.json`。`title`、`summary` 和 `sections` 提供给见己等调用方。选填的 `image`、`qrImage` 和 `actionText` 可以按当期内容增减。二维码图片可以使用随站发布的素材，见己负责展示外框。
+
+手账通过选填的 `target.page` 确定封面跳转的页码，并给对应页签加上「正好」胶带。省略 `target` 时默认跳到第 8 页。需要直达页内位置时再填 `target.section`。例如，`life` 是第 8 页，`life-reading` 是该页的正念共读区。手账在网页中直接读取 JSON，文件预览使用发布检查生成的本地副本。
+
+发布时将 JSON 放在 Pages 根目录。固定调用地址为 [current-recommendation.json](https://meditation.mihuspace.com/current-recommendation.json)。
+
 ## 发布
 
 ```sh
 node --check dist/app.js
-python3 scripts/check.py
+python3 scripts/check.py --sync-recommendation
 ```
 
 `main` 保存当前代码。通过 `gh-pages` 分支根目录发布 `dist/` 的同版静态文件，通过 GitHub Release 发布其 ZIP 下载包。正式发布前检查四个页签、九页顺序、手机长文、图片切换及联系入口。
